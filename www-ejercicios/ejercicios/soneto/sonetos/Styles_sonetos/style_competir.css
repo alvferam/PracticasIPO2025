@@ -1,0 +1,66 @@
+body {
+    /* Paleta de Lujo y Muerte: Negro, Oro y Púrpura */
+    background-color: #1a1a1a; /* Fondo negro profundo */
+    color: #e6c589; /* Tono dorado para el texto */
+    font-family: 'Verdana', sans-serif; /* Fuente legible pero formal */
+    margin: 0;
+    padding: 50px 20px;
+    display: flex;
+    justify-content: center;
+    /* Degradado sutil para dar opulencia */
+    background: radial-gradient(circle at 50% 10%, #3a3a3a, #1a1a1a);
+}
+
+.soneto-container {
+    max-width: 650px;
+    width: 90%;
+    padding: 40px 60px;
+    background-color: rgba(0, 0, 0, 0.7); /* Semitransparente oscuro */
+    border: 3px double #b8860b; /* Borde dorado */
+    box-shadow: 0 0 40px rgba(184, 134, 11, 0.5); /* Resplandor dorado */
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+h1 {
+    font-family: 'Bodoni', serif; /* Fuente ornamentada y de alto contraste */
+    font-size: 2.8em;
+    color: #ffc95f;
+    text-shadow: 1px 1px 3px #000;
+}
+
+.autor {
+    font-style: italic;
+    color: #a020f0; /* Púrpura, color de realeza */
+    font-size: 1.2em;
+}
+
+/* Estructura del soneto */
+.estrofa {
+    margin-bottom: 25px;
+}
+
+.estrofa p {
+    margin: 0;
+    line-height: 1.9;
+    letter-spacing: 0.5px;
+    text-indent: 1em; /* Ligeras sangrías */
+}
+
+/* El golpe de la fugacidad */
+.terceto.final {
+    margin-top: 30px;
+    border-top: 1px solid #b8860b;
+    padding-top: 20px;
+}
+
+.terceto.final p:last-child {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #a020f0;
+    /* Enfatizar la secuencia final */
+    text-transform: uppercase; 
+}

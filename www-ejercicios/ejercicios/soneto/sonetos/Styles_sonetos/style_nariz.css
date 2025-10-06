@@ -1,0 +1,58 @@
+body {
+    /* Diseño Complementario y chocante: Amarillo y Púrpura */
+    background-color: #2a003a; /* Púrpura oscuro, casi negro */
+    color: #fff176; /* Amarillo brillante (acento en el círculo cromático) */
+    font-family: 'Impact', 'Arial Black', sans-serif; /* Audaz y pesado */
+    margin: 0;
+    padding: 30px;
+    display: flex;
+    justify-content: center;
+    /* Efecto ligeramente torcido para romper la formalidad */
+    transform: rotate(-0.5deg); 
+}
+
+.soneto-container {
+    max-width: 500px;
+    width: 90%;
+    padding: 30px;
+    background-color: #3e0155; 
+    border: 5px dashed #ff5722; /* Naranja (segundo color chocante) */
+    box-shadow: 10px 10px 0 #1b0028; /* Sombra desplazada */
+}
+
+header {
+    text-align: center;
+    border-bottom: 4px solid #ff5722;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 2.8em;
+    color: #ffeb3b;
+    text-shadow: 2px 2px 0 #ff5722; /* Sombra doble para efecto cómic */
+}
+
+.autor {
+    font-style: normal;
+    font-size: 1.1em;
+}
+
+/* Estructura del soneto */
+.estrofa {
+    margin-bottom: 25px;
+}
+
+.estrofa p {
+    margin: 0 0 5px 0;
+    line-height: 1.5;
+    text-align: right; /* Alineación inusual */
+}
+
+/* El golpe final */
+.terceto.final p:last-child {
+    font-size: 1.4em;
+    text-align: center;
+    font-weight: bold;
+    color: #ff5722;
+}

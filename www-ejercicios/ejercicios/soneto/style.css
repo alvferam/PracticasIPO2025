@@ -1,0 +1,137 @@
+/* --- Base General del Menú --- */
+body {
+    /* Fuente legible para la navegación */
+    font-family: 'Helvetica Neue', Arial, sans-serif; 
+    background-color: #f8f8f8; /* Fondo claro general para un menú */
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+}
+
+.menu-header {
+    margin-bottom: 50px;
+    padding: 10px;
+}
+
+h1 {
+    font-size: 2.8em;
+    font-family: Georgia, serif; /* Título clásico para la antología */
+    color: #4a4a4a;
+    margin-bottom: 10px;
+}
+
+/* --- Layout de las Tarjetas (Grid) --- */
+.soneto-grid {
+    display: grid;
+    /* Diseñamos un grid adaptable */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* --- Estilo Base de la Tarjeta --- */
+.soneto-card {
+    display: block;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    text-decoration: none; 
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-align: left;
+    min-height: 150px; /* Altura mínima para uniformidad */
+}
+
+.soneto-card:hover {
+    transform: translateY(-8px); /* Efecto de elevación */
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+.titulo-card {
+    font-size: 1.6em;
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.autor-card {
+    font-style: italic;
+    font-size: 0.95em;
+    margin-bottom: 15px;
+    opacity: 0.8;
+}
+
+.resumen-card {
+    font-size: 1em;
+    line-height: 1.4;
+}
+
+/*---
+
+Diseños Temáticos Individuales (La Clave del Ejercicio)
+
+Cada clase de tarjeta usa una combinación de colores y tipografía que prefigura el estilo de la página final del soneto.
+*/
+
+/* 1. **"Miré los muros" (Decadencia) */
+
+.card-decadencia {
+    background-color: #4b4440; /* Gris pizarra, terroso */
+    color: #f0e6e0; /* Beige papiro para el texto */
+    font-family: 'Times New Roman', serif;
+}
+.card-decadencia .autor-card {
+    color: #c9c0ba;
+}
+
+/* 2. "Definición de soneto" (Metapoesía) */
+
+.card-meta {
+    background-color: #ffffff; /* Fondo muy claro, papel de cuaderno */
+    color: #006064; /* Texto como tinta estructural */
+    border: 3px solid #80cbc4; /* Borde de "estructura" */
+    font-family: 'Courier New', monospace; /* Tipo de letra estructural */
+}
+.card-meta .titulo-card {
+    text-decoration: underline dotted #80cbc4;
+}
+
+/* 3. "Escrito está en mi alma" (Amor Cortesano) */
+
+.card-amor {
+    background-color: #fffafa; /* Fondo suave, casi blanco */
+    color: #880e4f; /* Tono de vino/borgoña, pasión sutil */
+    border-left: 6px solid #d81b60; /* Borde de acento lateral romántico */
+    font-family: 'Garamond', serif; /* Fuente elegante y renacentista */
+}
+.card-amor .autor-card {
+    color: #c2185b;
+}
+
+/* 4. "Mientras por competir" (Barroco) */
+
+.card-barroco {
+    background: linear-gradient(135deg, #ffd700, #a020f0); /* Degradado de oro a púrpura */
+    color: #1a1a1a; /* Texto muy oscuro */
+    border: 1px solid gold;
+    font-family: 'Bodoni', serif; /* Fuente lujosa y con contraste */
+    text-shadow: 0.5px 0.5px 0.5px rgba(255, 255, 255, 0.4); 
+}
+.card-barroco .autor-card, .card-barroco .resumen-card {
+    color: #1a1a1a; /* Asegurar legibilidad del texto oscuro */
+    font-weight: 500;
+}
+
+/* 5. "A una nariz" (Sátira) */ 
+
+.card-satira {
+    background-color: #2c3e50; /* Azul oscuro */
+    color: #ffeb3b; /* Amarillo brillante para el texto (alto contraste) */
+    border: 3px double #e74c3c; /* Borde doble, grotesco */
+    font-family: 'Impact', sans-serif; /* Fuente audaz y chocante */
+    /* Ligera inclinación para romper la seriedad */
+    transform: rotate(0.8deg); 
+}
+.card-satira:hover {
+    transform: rotate(0deg) translateY(-8px); /* Se endereza al hacer hover */
+}

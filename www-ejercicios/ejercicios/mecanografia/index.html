@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Velocidad en Mecanografía Avanzado</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="contenedor-principal">
+        <h1>Test de Mecanografía</h1>
+        
+        <div class="configuracion">
+            <label for="selectModo">Modo:</label>
+            <select id="selectModo">
+                <option value="palabras">15 Palabras</option>
+                <option value="tiempo">60 Segundos</option>
+            </select>
+            
+            <label for="selectJuego">Dificultad:</label>
+            <select id="selectJuego">
+                <option value="facil">Fácil (1)</option>
+                <option value="normal" selected>Normal (2)</option>
+                <option value="dificil">Difícil (3)</option>
+                <option value="bilingue">Bilingüe (4)</option>
+            </select>
+        </div>
+
+        <div class="indicadores">
+            <p>Tiempo: <span id="tiempo">0</span>s / <span id="limiteTiempo">60</span>s</p>
+            <p>Palabras Correctas: <span id="palabrasCorrectas">0</span> / <span id="limitePalabras">15</span></p>
+        </div>
+
+        <div class="area-test">
+            <div id="palabraDeMuestra">Selecciona el modo y pulsa "Comenzar"</div>
+
+            <input type="text" id="entrada" placeholder="Escribe aquí..." disabled>
+
+            <div class="controles">
+                <button id="btnComienzo">Comenzar Test</button>
+                <button id="btnPausa" disabled>Pausar</button>
+                <button id="btnModal">Instrucciones</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalVentana" class="modal oculto">
+        <div class="modal-contenido">
+            <span class="cerrar-modal">&times;</span>
+            <h2>Instrucciones del Test</h2>
+            <p><strong>Objetivo:</strong> Teclar la palabra mostrada lo más rápido posible.</p>
+            <p><strong>Modos:</strong></p>
+            <ul>
+                <li>**15 Palabras:** Termina al escribir 15 palabras correctamente.</li>
+                <li>**60 Segundos:** Termina cuando el contador llega a 60 segundos.</li>
+            </ul>
+            <p><strong>Dificultad Bilingüe:</strong> La palabra se muestra en **inglés** y debes teclear la **traducción al español**.</p>
+            <p><strong>Teclas Rápidas:</strong> Pulsa **1, 2, 3 ó 4** para cambiar la dificultad (solo si el test NO está activo).</p>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
