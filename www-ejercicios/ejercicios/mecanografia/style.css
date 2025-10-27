@@ -1,3 +1,48 @@
+/* 1. Reseteo básico y configuración global  */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 2. Variables globales en :root  */
+:root {
+    /* Paleta de colores HSL  */
+    --color-fondo-pagina: hsl(225, 20%, 96%); 
+    --color-fondo-contenedor: hsl(0, 0%, 100%); 
+    --color-fondo-config: hsl(0, 0%, 97%); 
+    --color-fondo-stats: hsl(228, 11%, 90%); 
+    --color-fondo-input-disabled: hsl(0, 0%, 94%); 
+    --color-fondo-modal-overlay: hsla(0, 0%, 0%, 0.4);
+    --color-fondo-modal-content: hsl(0, 0%, 98%); 
+
+    --color-texto-principal: hsl(0, 0%, 20%); 
+    --color-texto-claro: hsl(0, 0%, 53%); 
+    --color-texto-muy-claro: hsl(0, 0%, 67%); 
+    --color-texto-hover: hsl(0, 0%, 0%); 
+
+    --color-borde-stats: hsl(0, 0%, 87%); 
+    --color-borde-input: hsl(0, 0%, 80%);
+
+    /* Colores de la aplicación (Primario, Éxito, Advertencia) */
+    --color-primario: hsl(211, 100%, 50%); 
+    --color-primario-hover: hsl(211, 100%, 35%); 
+    
+    --color-exito: hsl(134, 61%, 41%); 
+    --color-exito-hover: hsl(134, 61%, 31%); 
+    
+    --color-advertencia: hsl(45, 100%, 51%); 
+    --color-advertencia-hover: hsl(45, 100%, 44%);
+    
+    --sombra-caja: 0 0.25rem 0.625rem hsla(0, 0%, 0%, 0.1); 
+
+    /* Unidades de tipografía y espaciado */
+    --font-size-base: 1rem; 
+    --border-radius-normal: 0.625rem; 
+    --border-radius-pequeno: 0.3rem; 
+    --border-radius-grande: 0.5rem; 
+}
+
 body {
     font-family: Arial, sans-serif;
     display: flex;
@@ -5,133 +50,167 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    background-color: #f4f4f9;
+    background-color: var(--color-fondo-pagina);
+    color: var(--color-texto-principal);
 }
 
-.contenedor-principal {
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+/* 3. Estilos con BEM  */
+
+/* Bloque Principal: typing-test */
+.typing-test {
+    background-color: var(--color-fondo-contenedor);
+    padding: 1.875rem; 
+    border-radius: var(--border-radius-normal);
+    box-shadow: var(--sombra-caja);
     width: 90%;
-    max-width: 650px;
+    max-width: 40.625rem; 
     text-align: center;
 }
 
-h1 { color: #333; margin-bottom: 20px; }
+.typing-test h1 {
+    color: var(--color-texto-principal);
+    margin-bottom: 1.25rem; 
+}
 
-.configuracion {
+/* Elemento: config */
+.typing-test__config {
     display: flex;
     justify-content: center;
-    gap: 20px;
-    margin-bottom: 20px;
-    padding: 10px;
-    background-color: #f8f8f8;
-    border-radius: 5px;
+    gap: 1.25rem; 
+    margin-bottom: 1.25rem;
+    padding: 0.625rem; 
+    background-color: var(--color-fondo-config);
+    border-radius: var(--border-radius-pequeno);
 }
-.configuracion label { font-weight: bold; }
+.typing-test__config label {
+    font-weight: bold;
+}
 
-/* Indicadores */
-.indicadores {
+/* Elemento: stats */
+.typing-test__stats {
     display: flex;
     justify-content: space-around;
-    margin-bottom: 20px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #e9e9ee;
+    margin-bottom: 1.25rem; 
+    padding: 0.625rem;
+    border: 1px solid var(--color-borde-stats);
+    border-radius: var(--border-radius-pequeno);
+    background-color: var(--color-fondo-stats);
 }
 
-.area-test {
-    padding: 20px;
-    border: 2px solid #007bff;
-    border-radius: 8px;
-    margin-bottom: 20px;
+/* Elemento: area */
+.typing-test__area {
+    padding: 1.25rem; 
+    border: 0.125rem solid var(--color-primario); 
+    border-radius: var(--border-radius-grande);
+    margin-bottom: 1.25rem; 
 }
 
-#palabraDeMuestra {
+/* Elemento: sample-word */
+.typing-test__sample {
     font-size: 1.8em;
-    margin-bottom: 15px;
+    margin-bottom: 0.9rem; 
     font-weight: bold;
-    color: #007bff;
+    color: var(--color-primario);
     min-height: 1.8em;
 }
 
-#entrada {
+/* Elemento: input */
+.typing-test__input {
     width: 80%;
-    padding: 10px;
+    padding: 0.625rem; 
     font-size: 1.2em;
-    margin-bottom: 20px;
-    border: 2px solid #ccc;
-    border-radius: 4px;
+    margin-bottom: 1.25rem; 
+    border: 0.125rem solid var(--color-borde-input); 
+    border-radius: 0.25rem; 
     text-align: center;
 }
 
-#entrada:disabled {
-    background-color: #f0f0f0;
+.typing-test__input:disabled {
+    background-color: var(--color-fondo-input-disabled);
     cursor: not-allowed;
 }
 
-.controles {
+/* Elemento: controls */
+.typing-test__controls {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 0.625rem; 
 }
 
-.controles button {
-    padding: 10px 15px;
+/* Bloque: button */
+.button {
+    padding: 0.625rem 0.9rem; 
     font-size: 1em;
     border: none;
-    border-radius: 5px;
+    border-radius: var(--border-radius-pequeno);
     cursor: pointer;
     transition: background-color 0.3s;
+    color: white;
 }
 
-#btnComienzo { background-color: #28a745; color: white; }
-#btnComienzo:hover { background-color: #218838; }
+/* Modificadores de botón */
+.button--start {
+    background-color: var(--color-exito);
+}
+.button--start:hover {
+    background-color: var(--color-exito-hover);
+}
 
-#btnPausa { background-color: #ffc107; color: #333; }
-#btnPausa:hover { background-color: #e0a800; }
+.button--pause {
+    background-color: var(--color-advertencia);
+    color: var(--color-texto-principal);
+}
+.button--pause:hover {
+    background-color: var(--color-advertencia-hover);
+}
 
-#btnModal { background-color: #007bff; color: white; }
-#btnModal:hover { background-color: #0056b3; }
+.button--info {
+    background-color: var(--color-primario);
+}
+.button--info:hover {
+    background-color: var(--color-primario-hover);
+}
 
-/* Estilos de la Modal */
+/* Bloque: modal */
 .modal {
-    position: fixed;
-    z-index: 1;
+    position: fixed; 
+    z-index: 1; 
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.4);
-    display: none; 
+    background-color: var(--color-fondo-modal-overlay);
 }
 
-.modal-contenido {
-    background-color: #fefefe;
+.modal--hidden {
+    display: none;
+}
+
+/* Elemento: content */
+.modal__content {
+    background-color: var(--color-fondo-modal-content);
     margin: 15% auto; 
-    padding: 20px;
-    border: 1px solid #888;
+    padding: 1.25rem; 
+    border: 1px solid var(--color-texto-claro);
     width: 80%; 
-    max-width: 500px;
-    border-radius: 8px;
+    max-width: 31.25rem; 
+    border-radius: var(--border-radius-grande);
     text-align: left;
     position: relative;
 }
 
-.cerrar-modal {
-    color: #aaa;
+/* Elemento: close */
+.modal__close {
+    color: var(--color-texto-muy-claro);
     float: right;
-    font-size: 28px;
+    font-size: 1.75rem;
     font-weight: bold;
 }
 
-.cerrar-modal:hover,
-.cerrar-modal:focus {
-    color: #000;
+.modal__close:hover,
+.modal__close:focus {
+    color: var(--color-texto-hover);
     text-decoration: none;
     cursor: pointer;
 }
-.oculto { display: none; }

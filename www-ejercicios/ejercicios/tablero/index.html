@@ -1,28 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css">
-    <title>Tablero</title>
-  </head>
+    <title>Proyecto Tablero</title>
+</head>
+<body>
 
-  <body>
+    <main class="juego-contenedor">
+        <header class="controles">
+            <h1>Proyecto Tablero</h1>
 
-    <p>Proyecto Tablero</p>
-    <div class="ficha" data-ficha></div>
-    <div class="ficha" data-ficha></div>
-    <div class="ficha" data-ficha></div>
-    <div class="ficha" data-ficha></div>
-    <button id="inicio">Inicio</button>
-    <label for="tamañoFicha">Tamaño de la ficha:</label>
-    <select id="tamañoFicha">
-      <option value="pequeña">Pequeña</option>
-      <option value="mediana">Mediana</option>
-      <option value="grande">Grande</option>
-    </select>
-    <label for="tamañoTablero">Tamaño del tablero:</label>
-    <input type="number" id="tamañoTablero" min="1" max="7" value="2">
+            <div class="control-grupo">
+                <label for="tamañoTablero">Tablero (NxN):</label>
+                <input type="number" id="tamañoTablero" min="2" max="7" value="3">
+            </div>
 
-  </body>
+            <div class="control-grupo">
+                <label for="tamañoFicha">Tamaño Ficha:</label>
+                <select id="tamañoFicha">
+                    <option value="40px">Pequeña</option>
+                    <option value="60px" selected>Mediana</option>
+                    <option value="80px">Grande</option>
+                </select>
+            </div>
+
+            <button id="inicio">Iniciar Juego</button>
+        </header>
+
+        <div id="tablero"></div>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
 </html>

@@ -1,9 +1,154 @@
 /* style.css */
 /* Proyecto Tablero */
 
-.ficha {
-    width: 50px;
-    height: 50px;
-    background-color: lightgray;
-    border: 1px solid black;
+/* 1. Configuración Global y Variables */
+:root {
+    --ficha-size: 60px; 
+    --color-fondo: hsl(210, 20%, 98%);
+    --color-borde: hsl(210, 20%, 70%);
+    --color-sombra: hsl(210, 20%, 40%);
+    --color-texto: hsl(210, 10%, 20%);
+    --color-acento: hsl(214, 84%, 56%);
+
+    /* Paleta de 7 colores para las fichas */
+    --color-0: hsl(0, 72%, 51%);   /* Rojo */
+    --color-1: hsl(45, 100%, 51%); /* Amarillo */
+    --color-2: hsl(134, 61%, 41%); /* Verde */
+    --color-3: hsl(211, 100%, 50%); /* Azul */
+    --color-4: hsl(265, 82%, 58%); /* Morado */
+    --color-5: hsl(30, 82%, 58%);  /* Naranja */
+    --color-6: hsl(188, 82%, 58%); /* Cian */
 }
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+}
+
+/* 2. Contenedor Principal y Controles */
+.juego-contenedor {
+    width: 90%;
+    max-width: 600px;
+    padding: 1.5rem;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px hsla(0, 0%, 0%, 0.05);
+}
+
+.controles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--color-borde);
+}
+
+.controles h1 {
+    font-size: 1.5rem;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.control-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.control-grupo label {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+input[type="number"],
+select {
+    padding: 0.5rem;
+    border: 2px solid var(--color-borde);
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+button#inicio {
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: var(--color-acento);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button#inicio:hover {
+    background-color: hsl(214, 84%, 46%);
+}
+
+
+/* 3. Estilos del Tablero (Grid) y Fichas */
+#tablero {
+    display: grid;
+    /* grid-template-columns será definido por JS */
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--color-fondo);
+    border: 2px solid var(--color-borde);
+    border-radius: 8px;
+    /* Centrar el tablero si es más pequeño que el contenedor */
+    margin: 0 auto; 
+}
+
+.ficha {
+    /* El tamaño se controla con la variable CSS */
+    width: var(--ficha-size); 
+    height: var(--ficha-size);
+    border: 3px solid transparent;
+    border-radius: 8px;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+/* 4. Estilos de Interacción (Drag & Drop) */
+
+/* La ficha que se puede arrastrar */
+.ficha[draggable="true"] {
+    cursor: grab;
+    user-select: none;
+}
+
+/* La ficha mientras está siendo arrastrada */
+.ficha.dragging {
+    opacity: 0.4;
+    cursor: grabbing;
+    transform: scale(0.9);
+}
+
+/* La ficha sobre la que se está pasando (zona de drop) */
+.ficha.over {
+    border-color: var(--color-acento);
+    border-style: dashed;
+    transform: scale(1.05);
+}
+
+/* 5. Clases de Color (generadas por JS) */
+.color-0 { background-color: var(--color-0); }
+.color-1 { background-color: var(--color-1); }
+.color-2 { background-color: var(--color-2); }
+.color-3 { background-color: var(--color-3); }
+.color-4 { background-color: var(--color-4); }
+.color-5 { background-color: var(--color-5); }
+.color-6 { background-color: var(--color-6); }

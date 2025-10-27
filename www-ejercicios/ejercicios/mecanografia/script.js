@@ -77,7 +77,7 @@ function comenzarTest() {
     isPaused = false;
     palabraBilingue = null;
 
-    // 2. Habilitar interfaz y DESHABILITAR CONFIGURACIÓN
+    // 2. Habilitar y deshabilitar interfaz 
     entradaEl.disabled = false;
     entradaEl.focus();
     btnComienzoEl.disabled = true;
@@ -159,9 +159,7 @@ function manejarEntrada(e) {
 
     const palabraTecleada = entradaEl.value.trim().toLowerCase(); 
     
-    const palabraRequerida = palabraBilingue !== null 
-                           ? palabraBilingue 
-                           : palabraDeMuestraEl.textContent;
+    const palabraRequerida = palabraBilingue !== null ? palabraBilingue : palabraDeMuestraEl.textContent;
 
     const palabraRequeridaMin = palabraRequerida.toLowerCase();
 
@@ -225,14 +223,14 @@ function actualizarConfiguracion() {
     palabraDeMuestraEl.textContent = `¡Modo ${selectJuegoEl.value.toUpperCase()} ${modoTexto} listo! Pulsa "Comenzar".`;
 }
 
-// --- VARIANTE: Lógica del Modal, mensaje ---
+// --- VARIANTE: Lógica del Modal (ADAPTADA) ---
 
 function abrirModal() {
-    modalVentanaEl.style.display = "block";
+    modalVentanaEl.classList.remove('modal--hidden');
 }
 
 function cerrarModal() {
-    modalVentanaEl.style.display = "none";
+    modalVentanaEl.classList.add('modal--hidden');
 }
 
 // --- Event Listeners ---
@@ -249,7 +247,7 @@ selectJuegoEl.addEventListener('change', actualizarConfiguracion);
 btnModalEl.addEventListener('click', abrirModal);
 cerrarModalEl.addEventListener('click', cerrarModal);
 window.addEventListener('click', (e) => {
-    if (e.target === modalVentanaEl) {
+    if (e.target === modalVentanaEl) { 
         cerrarModal();
     }
 });
