@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css"> <title>Proyecto Tablero</title>
+    <link rel="stylesheet" href="style.css"> <title>Tablero Doble</title>
 </head>
 <body>
     <main class="juego-contenedor">
-        <h1>Proyecto Tablero</h1>
+        <h1>Tablero Doble</h1>
         <div class="controles">
             <div class="controles__fila">
                 <div class="control-grupo">
@@ -39,9 +39,12 @@
             <p>Intercambios: <span id="contadorIntercambios">0</span></p>
             <p>Tiempo: <span id="tiempoJuego">0</span>s</p>
         </div>
-        
-        <div id="tablero" class="tablero">
-            </div>
+        <div class="tableros-contenedor">
+            <div id="tablero-A" class="tablero">
+                </div>
+            <div id="tablero-B" class="tablero">
+                </div>
+        </div>
         </main>
     <div id="modalAyuda" class="modal modal--hidden">
         <div class="modal__content">
@@ -51,7 +54,7 @@
             <ul>
                 <li>Usa los controles para definir el tamaño del tablero y de las fichas.</li>
                 <li>Pulsa "Iniciar Juego" para generar un nuevo tablero aleatorio.</li>
-                <li>Arrastra (Drag) una ficha y suéltala (Drop) sobre otra para intercambiar sus posiciones.</li>
+                <li>Arrastra (Drag) una ficha y suéltala (Drop) sobre otra **del tablero opuesto** para intercambiar sus posiciones.</li>
             </ul>
         </div>
     </div>

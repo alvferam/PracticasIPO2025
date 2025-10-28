@@ -1,171 +1,229 @@
-// script.js
+// script.js (Unificado)
 
 // --- 1. Elementos del DOM ---
-const tableroEl = document.getElementById('tablero');
 const inicioBtn = document.getElementById('inicio');
 const tamañoTableroInput = document.getElementById('tamañoTablero');
 const tamañoFichaSelect = document.getElementById('tamañoFicha');
+const formaFichaSelect = document.getElementById('formaFicha');
+const contadorIntercambiosEl = document.getElementById('contadorIntercambios');
+const tiempoJuegoEl = document.getElementById('tiempoJuego');
+const modalAyudaEl = document.getElementById('modalAyuda');
+const btnAyuda = document.getElementById('btnAyuda');
+const cerrarModalEl = document.querySelector('.modal__close');
+
+// --- Elementos Específicos ---
+const tableroSimpleEl = document.getElementById('tablero');
+const tableroA_El = document.getElementById('tablero-A');
+const tableroB_El = document.getElementById('tablero-B');
 
 // --- 2. Estado del Juego ---
-let fichaArrastrada = null; // Almacena el elemento DIV de la ficha que se arrastra
-let N = 0; // Tamaño del tablero (NxN)
+let fichaArrastrada = null;
+let N = 0;
+let contadorIntercambios = 0;
+let idIntervalo = 0;
+let segundos = 0;
 
-// --- 3. Event Listeners de Controles ---
+// --- Detección de Modo ---
+// Detecta en qué página estamos al cargar
+const modoJuego = tableroA_El ? 'doble' : 'simple';
+
+// --- 3. Event Listeners ---
 inicioBtn.addEventListener('click', iniciarJuego);
+// Listeners Modal
+btnAyuda.addEventListener('click', () => modalAyudaEl.classList.remove('modal--hidden'));
+cerrarModalEl.addEventListener('click', () => modalAyudaEl.classList.add('modal--hidden'));
+window.addEventListener('click', (e) => {
+    if (e.target === modalAyudaEl) modalAyudaEl.classList.add('modal--hidden');
+});
 
-// Cargar el juego inicial al cargar la página
-document.addEventListener('DOMContentLoaded', iniciarJuego);
-
-
-// --- 4. Función Principal: Iniciar Juego ---
+// --- 4. Función Principal ---
 function iniciarJuego() {
-    // Leer valores de los controles
+    // 4.1. Leer valores comunes
     N = parseInt(tamañoTableroInput.value);
     const tamañoFicha = tamañoFichaSelect.value;
-
-    // 4.1. Limpiar tablero anterior
-    tableroEl.innerHTML = '';
-
-    // 4.2. Aplicar estilos al tablero (Grid y tamaño de fichas)
-    // El enunciado pide modificar la estructura del tablero
-    tableroEl.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
-    tableroEl.style.width = `calc(${N} * ${tamañoFicha} + ${N} * 0.5rem + 1rem)`; // N*ficha + N*gap + padding
+    const formaFicha = formaFichaSelect.value;
     document.documentElement.style.setProperty('--ficha-size', tamañoFicha);
 
-    // 4.3. Generar array de fichas (coherente)
-    // Para N=3, necesitamos [0,0,0, 1,1,1, 2,2,2]
+    // 4.2. Generar y barajar fichas
     let fichas = [];
     for (let i = 0; i < N; i++) {
         for (let j = 0; j < N; j++) {
-            fichas.push(i); // i representa el color
+            fichas.push(i);
         }
     }
-
-    // 4.4. Barajar las fichas
     barajarFichas(fichas);
 
-    // 4.5. Crear y añadir fichas al DOM
-    fichas.forEach(colorIndex => {
-        const ficha = document.createElement('div');
-        ficha.classList.add('ficha', `color-${colorIndex}`);
-        
-        // El enunciado pide usar data-ficha para facilitar acceso
-        ficha.dataset.ficha = colorIndex; 
-        
-        ficha.setAttribute('draggable', 'true');
-        
-        // Añadir listeners de Drag & Drop
-        añadirEventListeners(ficha);
-        
-        tableroEl.appendChild(ficha);
-    });
+    // 4.3. Lógica de creación
+    if (modoJuego === 'doble') {
+        // --- INICIO LÓGICA DOBLE ---
+        tableroA_El.innerHTML = '';
+        tableroB_El.innerHTML = '';
+        tableroA_El.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
+        tableroB_El.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
+
+        // Generar segundo mazo de fichas
+        let fichasB = [];
+        for (let i = 0; i < N; i++) { for (let j = 0; j < N; j++) { fichasB.push(i); } }
+        barajarFichas(fichasB);
+
+        fichas.forEach(colorIndex => crearFicha(tableroA_El, colorIndex, formaFicha));
+        fichasB.forEach(colorIndex => crearFicha(tableroB_El, colorIndex, formaFicha));
+    } else {
+        // --- INICIO LÓGICA SIMPLE ---
+        tableroSimpleEl.innerHTML = '';
+        tableroSimpleEl.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
+        fichas.forEach(colorIndex => crearFicha(tableroSimpleEl, colorIndex, formaFicha));
+    }
+
+    // 4.4. Reiniciar contadores
+    contadorIntercambios = 0;
+    contadorIntercambiosEl.textContent = '0';
+    segundos = 0;
+    tiempoJuegoEl.textContent = '0';
+    if (idIntervalo) clearInterval(idIntervalo); 
+    idIntervalo = setInterval(() => {
+        segundos++;
+        tiempoJuegoEl.textContent = segundos;
+    }, 1000);
 }
 
-// --- 5. Lógica de Drag & Drop ---
+// --- 5. Funciones de Creación ---
+function crearFicha(tablero, colorIndex, formaFicha) {
+    const ficha = document.createElement('div');
+    ficha.classList.add('ficha', `color-${colorIndex}`, `forma-${formaFicha}`);
+    ficha.dataset.ficha = colorIndex; 
+    ficha.setAttribute('draggable', 'true');
+    añadirEventListeners(ficha);
+    tablero.appendChild(ficha);
+}
 
+// --- 6. Lógica de Drag & Drop ---
 function añadirEventListeners(ficha) {
     ficha.addEventListener('dragstart', handleDragStart);
     ficha.addEventListener('dragover', handleDragOver);
-    ficha.addEventListener('dragenter', handleDragEnter);
     ficha.addEventListener('dragleave', handleDragLeave);
     ficha.addEventListener('dragend', handleDragEnd);
-    ficha.addEventListener('drop', handleDrop);
-}
 
-function handleDragStart(e) {
-    fichaArrastrada = this; // 'this' es la ficha que se empieza a arrastrar
-    this.classList.add('dragging');
-    
-    // API dataTransfer (requisito del enunciado)
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', this.dataset.ficha);
-}
-
-function handleDragOver(e) {
-    e.preventDefault(); // Necesario para permitir el 'drop'
-}
-
-function handleDragEnter(e) {
-    e.preventDefault();
-    // Apoyo visual
-    if (this !== fichaArrastrada) {
-        this.classList.add('over');
+    if (modoJuego === 'doble') {
+        // --- INICIO LÓGICA DOBLE ---
+        ficha.addEventListener('dragenter', handleDragEnter_Doble);
+        ficha.addEventListener('drop', handleDrop_Doble);
+    } else {
+        // --- INICIO LÓGICA SIMPLE ---
+        ficha.addEventListener('dragenter', handleDragEnter_Simple);
+        ficha.addEventListener('drop', handleDrop_Simple);
     }
 }
 
-function handleDragLeave() {
-    this.classList.remove('over');
+// --- Handlers Comunes ---
+function handleDragStart(e) {
+    fichaArrastrada = this; 
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', this.dataset.ficha);
 }
-
+function handleDragOver(e) { e.preventDefault(); }
+function handleDragLeave() { this.classList.remove('over'); }
 function handleDragEnd() {
-    // Limpiar estilos visuales
     this.classList.remove('dragging');
     document.querySelectorAll('.ficha').forEach(f => f.classList.remove('over'));
     fichaArrastrada = null;
 }
 
-function handleDrop(e) {
-    e.stopPropagation(); // Evitar propagación
-    
-    // Solo intercambiar si no es la misma ficha
-    if (fichaArrastrada !== this) {
-        // --- Lógica de Intercambio ---
-        
-        // 1. Obtener datos (color/id) de ambas fichas
-        const colorOrigen = fichaArrastrada.dataset.ficha;
-        const colorDestino = this.dataset.ficha;
-
-        // 2. Intercambiar las clases de color
-        fichaArrastrada.classList.remove(`color-${colorOrigen}`);
-        fichaArrastrada.classList.add(`color-${colorDestino}`);
-        
-        this.classList.remove(`color-${colorDestino}`);
-        this.classList.add(`color-${colorOrigen}`);
-
-        // 3. Intercambiar los atributos data-ficha
-        fichaArrastrada.dataset.ficha = colorDestino;
-        this.dataset.ficha = colorOrigen;
-
-        // 4. Comprobar si se ha ganado
+// --- Handlers Modo Simple ---
+function handleDragEnter_Simple(e) {
+    e.preventDefault();
+    if (this !== fichaArrastrada) { this.classList.add('over'); }
+}
+function handleDrop_Simple(e) {
+    e.stopPropagation(); 
+    if (fichaArrastrada && this !== fichaArrastrada) {
+        intercambiarFichas(this, fichaArrastrada);
         comprobarVictoria();
     }
-    
     return false;
 }
 
+// --- Handlers Modo Doble ---
+function handleDragEnter_Doble(e) {
+    e.preventDefault();
+    if (fichaArrastrada && this.parentElement !== fichaArrastrada.parentElement) {
+        this.classList.add('over');
+    }
+}
+function handleDrop_Doble(e) {
+    e.stopPropagation(); 
+    if (fichaArrastrada && this.parentElement !== fichaArrastrada.parentElement) {
+        intercambiarFichas(this, fichaArrastrada);
+        comprobarVictoria();
+    }
+    return false;
+}
 
-// --- 6. Funciones Auxiliares y Variantes ---
+// --- 7. Funciones Auxiliares ---
 
-/**
- * Algoritmo Fisher-Yates para barajar un array.
- */
+// Función de intercambio
+function intercambiarFichas(fichaA, fichaB) {
+    const colorA = fichaA.dataset.ficha;
+    const colorB = fichaB.dataset.ficha;
+
+    fichaA.classList.remove(`color-${colorA}`);
+    fichaA.classList.add(`color-${colorB}`);
+    fichaA.dataset.ficha = colorB;
+
+    fichaB.classList.remove(`color-${colorB}`);
+    fichaB.classList.add(`color-${colorA}`);
+    fichaB.dataset.ficha = colorA;
+
+    contadorIntercambios++;
+    contadorIntercambiosEl.textContent = contadorIntercambios;
+}
+
 function barajarFichas(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]]; // Intercambio
+        [array[i], array[j]] = [array[j], array[i]];
     }
 }
 
-/**
- * Comprobar que el tablero ha sido completado con éxito.
- */
+// Función de comprobación
 function comprobarVictoria() {
-    const todasFichas = Array.from(tableroEl.children);
+    let victoria = false;
     
-    for (let i = 0; i < N; i++) { // Iterar por filas
-        const primerColorDeLaFila = todasFichas[i * N].dataset.ficha;
-        
-        for (let j = 1; j < N; j++) { // Iterar por columnas
-            const fichaActual = todasFichas[i * N + j];
-            if (fichaActual.dataset.ficha !== primerColorDeLaFila) {
-                // Si una ficha no coincide, el juego no ha terminado
-                return; 
-            }
+    if (modoJuego === 'doble') {
+        // --- INICIO LÓGICA DOBLE ---
+        const ganoA = tableroEstaResuelto(tableroA_El);
+        const ganoB = tableroEstaResuelto(tableroB_El);
+        if (ganoA && ganoB) {
+            victoria = true;
+            alert(`¡INCREÍBLE! ¡Has resuelto AMBOS tableros! 
+                \nTiempo: ${segundos}s \nIntercambios: ${contadorIntercambios}`);
+        }
+    } else {
+        // --- INICIO LÓGICA SIMPLE ---
+        if (tableroEstaResuelto(tableroSimpleEl)) {
+            victoria = true;
+            alert(`¡Felicidades, has ganado!
+                \nTiempo: ${segundos}s \nIntercambios: ${contadorIntercambios}`);
         }
     }
 
-    // Si todas las filas se comprueban, el jugador ha ganado
-    setTimeout(() => {
-        alert('¡Felicidades, has ganado!');
-    }, 100); // Pequeño delay para que se vea el último movimiento
+    if (victoria) {
+        clearInterval(idIntervalo); 
+        idIntervalo = 0; 
+    }
+}
+
+// Función auxiliar de comprobación
+function tableroEstaResuelto(tablero) {
+    const todasFichas = Array.from(tablero.children);
+    for (let i = 0; i < N; i++) { 
+        const primerColor = todasFichas[i * N].dataset.ficha;
+        for (let j = 1; j < N; j++) {
+            if (todasFichas[i * N + j].dataset.ficha !== primerColor) {
+                return false; 
+            }
+        }
+    }
+    return true; 
 }

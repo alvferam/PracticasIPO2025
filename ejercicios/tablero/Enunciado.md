@@ -41,12 +41,12 @@ Debe tenerse en cuenta que:
 
 ## Variantes
 
-- Permitir cambiar la forma de las fichas (círculos, cuadrados, triángulos, etc)
-- Añadir un componente explicativo del juego mediante una ventana modal
-- Mostrar el número de intercambios efectuados.
-- Añadir un temporizador que registre el tiempo empleado para resolver el juego
+- Permitir cambiar la forma de las fichas (círculos, cuadrados, triángulos, etc) OK
+- Añadir un componente explicativo del juego mediante una ventana modal. OK
+- Mostrar el número de intercambios efectuados. OK
+- Añadir un temporizador que registre el tiempo empleado para resolver el juego. OK
 - Mostrar dos tableros, de forma que los intercambios de fichas sean de un tablero al otro.
-- Comprobar que el tablero ha sido completado con éxito y hacer patente esta información
+- Comprobar que el tablero ha sido completado con éxito y hacer patente esta información. REALIZADO
 - Modificar la mecánica del juego (un ejemplo simple sería que las fichas unidas representaran una imagen)
 
 

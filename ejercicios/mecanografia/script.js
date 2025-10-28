@@ -39,6 +39,7 @@ let isPaused = false;
 let modoActivo = selectModoEl.value; 
 let palabrasActivas = PALABRAS_NORMALES; 
 let palabraBilingue = null; 
+let palabraPausada = "";
 
 // --- Funciones del Temporizador ---
 
@@ -115,9 +116,7 @@ function establecerNuevaPalabra() {
     if (selectJuegoEl.value === 'bilingue') {
         const palabrasIngles = Object.keys(DICCIONARIO_BILINGUE);
         const palabraIngles = recuperaElementoAleatorio(palabrasIngles);
-        
         palabraBilingue = DICCIONARIO_BILINGUE[palabraIngles]; 
-
         palabraDeMuestraEl.textContent = palabraIngles;
     } else {
         palabraBilingue = null;
@@ -128,7 +127,7 @@ function establecerNuevaPalabra() {
 // --- VARIANTE: Lógica de Pausa/Reanudar ---
 
 function manejarPausa() {
-    if (identificadorIntervalo !== 0) {
+    if (btnComienzoEl.disabled) {
         if (isPaused) {
             // REANUDAR
             iniciarTemporizador(); 
@@ -136,13 +135,14 @@ function manejarPausa() {
             entradaEl.focus();
             btnPausaEl.textContent = "Pausar";
             isPaused = false;
-            palabraDeMuestraEl.textContent = "¡Reanudado! Sigue tecleando...";
+            palabraDeMuestraEl.textContent = palabraPausada;
         } else {
             // PAUSAR
             detenerTemporizador();
             entradaEl.disabled = true; 
             btnPausaEl.textContent = "Reanudar";
             isPaused = true;
+            palabraPausada = palabraDeMuestraEl.textContent;
             palabraDeMuestraEl.textContent = "PAUSADO";
         }
     }
@@ -156,24 +156,19 @@ function manejarEntrada(e) {
     if (identificadorIntervalo === 0 || isPaused) {
         return;
     }
-
     const palabraTecleada = entradaEl.value.trim().toLowerCase(); 
-    
     const palabraRequerida = palabraBilingue !== null ? palabraBilingue : palabraDeMuestraEl.textContent;
-
     const palabraRequeridaMin = palabraRequerida.toLowerCase();
 
     if (palabraTecleada === palabraRequeridaMin) {
         palabrasCorrectas++;
         palabrasCorrectasEl.textContent = `${palabrasCorrectas}`;
-
         entradaEl.value = '';
         
         if (modoActivo === 'palabras' && palabrasCorrectas >= LIMITE_PALABRAS) {
             finalizarTest();
             return;
         }
-
         establecerNuevaPalabra();
     }
 }
@@ -181,15 +176,17 @@ function manejarEntrada(e) {
 // --- VARIANTE: Lógica de Teclado Numérico ---
 
 function manejarTeclasNumericas(e) {
-    // VARIANTE: Solo permitir cambio si NO hay un test activo
+    // VARIANTE: Solo permitir cambio si no hay un test activo
     if (identificadorIntervalo === 0) { 
         let dificultad = '';
-
-        if (e.key === '1') dificultad = 'facil';
-        if (e.key === '2') dificultad = 'normal';
-        if (e.key === '3') dificultad = 'dificil';
-        if (e.key === '4') dificultad = 'bilingue'; 
-        
+        if (e.key === '1') 
+            dificultad = 'facil';
+        if (e.key === '2') 
+            dificultad = 'normal';
+        if (e.key === '3') ç
+            dificultad = 'dificil';
+        if (e.key === '4') 
+            dificultad = 'bilingue'; 
         if (dificultad) {
             selectJuegoEl.value = dificultad;
             actualizarConfiguracion();
@@ -201,7 +198,6 @@ function actualizarConfiguracion() {
     if (identificadorIntervalo !== 0) {
         return;
     }
-
     switch (selectJuegoEl.value) {
         case 'facil':
             palabrasActivas = PALABRAS_FACILES;
@@ -218,12 +214,11 @@ function actualizarConfiguracion() {
     }
 
     modoActivo = selectModoEl.value;
-
     const modoTexto = modoActivo === 'palabras' ? `de ${LIMITE_PALABRAS} palabras` : `de ${LIMITE_TIEMPO} segundos`;
     palabraDeMuestraEl.textContent = `¡Modo ${selectJuegoEl.value.toUpperCase()} ${modoTexto} listo! Pulsa "Comenzar".`;
 }
 
-// --- VARIANTE: Lógica del Modal (ADAPTADA) ---
+// --- VARIANTE: Lógica del Modal ---
 
 function abrirModal() {
     modalVentanaEl.classList.remove('modal--hidden');
