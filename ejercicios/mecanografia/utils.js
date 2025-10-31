@@ -2,7 +2,7 @@
 
 // VARIANTE: Distintos juegos de palabras 
 export const PALABRAS_FACILES = [
-    "sol", "mar", "casa", "luna", "agua", "mesa", "perro", "gato", "azul", "rojo",
+    "sol", "mar", "casa", "luna", "agua", "mesa", "perro", "gato", "azul", "rojo","pez","coco",
 ];
 
 export const PALABRAS_NORMALES = [
