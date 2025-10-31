@@ -2,13 +2,9 @@
 
 // VARIANTE: Distintos juegos de palabras 
 export const PALABRAS_FACILES = [
-<<<<<<< HEAD
-    "sol", "mar", "casa", "luna", "agua", "mesa", "perro", "gato", "azul", "rojo","pez","coco",
-=======
     "sol", "mar", "casa", "luna", "agua", "mesa", "perro", "gato", "azul", "rojo", "pan", "pez", "luz", "ver", "ir", "rey", "ley", "pie", "sal", "voz",
     "dia", "noche", "cielo", "flor", "tren", "mano", "dedo", "ojo", "pelo", "cara", "paz", "don", "fin", "hoy", "ayer", "cien", "mil", "tres", "seis", "siete",
     "lapiz", "papel", "libro", "hoja", "silla", "cama", "piso", "auto", "moto", "barco"
->>>>>>> 11cb34d5e5ca5a582b6e1b66e4323f935c74b89c
 ];
 
 export const PALABRAS_NORMALES = [
