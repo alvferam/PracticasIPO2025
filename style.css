@@ -1,82 +1,106 @@
 /* Estilos generales */
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /* outline: 1px solid red; */
 }
 
 :root {
-
     --color-de-fondo: hsl(90, 20%, 96%);
-    
     --color-principal: hsl(122, 40%, 45%);
     --color-principal-texto: hsl(0, 0%, 100%);
     --color-principal-borde: hsl(122, 13%, 36%);
-  
     --fuente-familia: 'Arial', sans-serif;
 }
 
 body {
     font-family: var(--fuente-familia);
     background-color: var(--color-de-fondo);
-
-
 }
 
 .contenedor-ipo {
-
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+}
 
-    .cabecera-ipo {
-        background-color: var(--color-principal);
-        color: var(--color-principal-texto);
-        padding: 1rem;
+/* --- Cabecera --- */
+.cabecera-ipo {
+    background-color: var(--color-principal);
+    color: var(--color-principal-texto);
+    padding: 1rem;
+}
 
-        .titulo {
-            text-align: center;
-            text-transform: uppercase;
-            font-weight: bold;
-            font-size: 1.5rem;
-        }
-    }
+.cabecera-ipo .titulo {
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
 
-    .ejercicios-ipo {
-        flex: 1;
-        padding: 2.5rem;
+/* --- Contenido Principal --- */
+.ejercicios-ipo {
+    flex: 1; 
+    padding: 2.5rem;
+}
 
-        .lista-ejercicios {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
+.ejercicios-ipo h2 {
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
 
-            .lista-ejercicios__item {
-   
-                a {
-                    text-decoration: none;
-                    text-transform: uppercase;
-                    color: var(--color-principal);
-                    font-weight: bold;
+.ejercicios-ipo .lista-ejercicios {
+    list-style: none; 
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
 
-                }
+.ejercicios-ipo .lista-ejercicios__item {
+    display: flex; 
+    gap: 0.5rem; 
+    align-items: center; 
+}
 
-                a:hover {
-                    text-decoration: underline;
-                }
-            }
-        }
+.ejercicios-ipo .lista-ejercicios__item::before {
+    content: '-'; 
+    color: var(--color-principal);
+    font-weight: bold;
+    font-size: 1.2rem; 
+}
 
-    }
+.ejercicios-ipo .lista-ejercicios__item a {
+    text-decoration: none;
+    text-transform: uppercase;
+    color: var(--color-principal);
+    font-weight: bold;
+}
 
-    .pie-ipo {
+.ejercicios-ipo .lista-ejercicios__item a:hover {
+    text-decoration: underline;
+}
 
-        background-color: var(--color-principal);
-        color: var(--color-principal-texto);
-        padding: 1.3rem;
-        text-align: center;
-    }
+.ejercicios-ipo .lista-ejercicios__item--subitem {
+    margin-left: 2.5rem; 
+    gap: 0.8rem;
+}
+
+.ejercicios-ipo .lista-ejercicios__item--subitem::before {
+    content: '→'; 
+    font-size: 1rem;
+    color: var(--color-principal-borde); 
+}
+
+.ejercicios-ipo .lista-ejercicios__item--subitem a {
+    text-transform: none; 
+    font-size: 0.95rem; 
+    font-weight: 500; 
+}
+
+/* --- Pie de página --- */
+.pie-ipo {
+    background-color: var(--color-principal);
+    color: var(--color-principal-texto);
+    padding: 1.3rem;
+    text-align: center;
 }

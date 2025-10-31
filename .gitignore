@@ -1,0 +1,8 @@
+# Archivos de Visual Studio
+/.vs/
+
+# Archivos de VS Code 
+/.vscode/
+
+# Archivos del sistema
+.DS_Store
