@@ -252,11 +252,20 @@ body {
   background: hsl(45, 100%, 40%);
 }
 
-/* Simular que la tecla se hunde */
-.piano__key--active {
+/* Simular hundimiento de teclas */
+
+/* Teclas blancas: se hunden hacia abajo */
+.piano__key--white.piano__key--active {
   transform: translateY(3px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
 }
+
+/* Teclas negras: se hunden sin perder el centrado horizontal */
+.piano__key--black.piano__key--active {
+  transform: translate(-50%, 3px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
 
 .piano__help {
   margin: 0;
