@@ -1,207 +1,183 @@
 /* ===============================
-   Proyecto "Mapa" (vanilla JS)
-   - Renderiza un mapa adaptable al viewport
-   - Coloca ítems (POIs) en posiciones % relativas
-   - Leyenda visible al pasar el cursor (CSS)
-   - Filtros por tipo + panel lateral
-   - Modo añadir punto sobre clic
-   - Arrastrar para reubicar un ítem
+    Lógica del Proyecto Mapa
 =================================*/
 
-// ---- Almacén de ítems (puedes cargarlo de un JSON si lo prefieres) ----
+// 1. Almacén de datos (Store)
 const store = [
-  { id: 'a1', x: 20, y: 15, type: 'restaurante', title: 'La Plaza', desc: 'Tapas y cocina andaluza.' },
-  { id: 'b2', x: 42, y: 22, type: 'cafe',        title: 'Café Nube', desc: 'Especialidad en espresso.' },
-  { id: 'c3', x: 70, y: 62, type: 'parque',      title: 'Parque Central', desc: 'Zonas verdes y juegos.' },
-  { id: 'd4', x: 82, y: 44, type: 'museo',       title: 'Museo de Arte', desc: 'Colección moderna.' },
+  { id: '1', x: 20, y: 30, type: 'restaurante', title: 'Casa Paco', desc: 'Las mejores tapas.' },
+  { id: '2', x: 50, y: 50, type: 'parque',      title: 'Parque Central', desc: 'Zona verde y relax.' },
+  { id: '3', x: 75, y: 20, type: 'museo',       title: 'Museo Historia', desc: 'Entrada gratuita domingos.' },
+  { id: '4', x: 35, y: 70, type: 'cafe',        title: 'Café Aroma', desc: 'Café de especialidad.' },
 ];
 
-const MAP_TYPES = ['restaurante','cafe','parque','museo'];
+const MAP_TYPES = ['restaurante', 'cafe', 'parque', 'museo'];
 
+// 2. Referencias al DOM 
 const map = document.getElementById('map');
-const panel = document.getElementById('side-panel');
+const sideArea = document.getElementById('side-area');
 const togglePanelBtn = document.getElementById('toggle-panel');
-const addModeCheckbox = document.getElementById('add-mode');
-const poiSizeRange = document.getElementById('poi-size');
-const mapSizeRange = document.getElementById('map-size');
-const filtersWrap = document.getElementById('filters');
+const filtersContainer = document.getElementById('filters');
+const addModeCheck = document.getElementById('add-mode');
+const mapSizeInput = document.getElementById('map-size');
+const poiSizeInput = document.getElementById('poi-size');
 const labelsToggle = document.getElementById('labels-toggle');
 
-/* ---------- Utilidades ---------- */
-function percentToPx(v, total){ return (v/100) * total; }
-function clamp(n, min, max){ return Math.max(min, Math.min(n, max)); }
+/* --- Inicialización --- */
+function init() {
+  loadMapBackground();
+  renderFilters();
+  renderPOIs();
+  setupListeners();
+}
 
-/* ---------- Carga imagen de fondo si existe atributo data-bg ---------- */
-(function initBackground(){
+function loadMapBackground() {
   const bg = map.getAttribute('data-bg');
-  if(bg){
+  if (bg) {
     map.style.setProperty('--map-img', `url('${bg}')`);
   }
-})();
+}
 
-/* ---------- Render de filtros ---------- */
-function renderFilters(){
-  filtersWrap.innerHTML = '';
+/* --- Renderizado de Filtros --- */
+function renderFilters() {
+  filtersContainer.innerHTML = '';
   MAP_TYPES.forEach(type => {
-    const id = 'filter_' + type;
     const label = document.createElement('label');
-    label.innerHTML = `<input type="checkbox" id="${id}" data-type="${type}" checked> ${type}`;
-    filtersWrap.appendChild(label);
-  });
-}
-renderFilters();
-
-/* ---------- Render de puntos ---------- */
-function renderPOIs(){
-  map.querySelectorAll('.poi').forEach(n => n.remove());
-  const activeTypes = getActiveTypes();
-  store.forEach(item => {
-    if(!activeTypes.has(item.type)) return;
-    const el = document.createElement('button');
-    el.className = 'poi';
-    el.type = 'button';
-    el.dataset.id = item.id;
-    el.dataset.type = item.type;
-    el.style.left = item.x + '%';
-    el.style.top  = item.y + '%';
-    el.style.setProperty('--poi-size', poiSizeRange.value + 'px');
-    el.setAttribute('aria-label', `${item.title}: ${item.desc}`);
-
-    el.innerHTML = `
-      <span class="legend" role="tooltip">
-        <h3>${item.title}</h3>
-        <p>${item.desc}</p>
-      </span>
+    // Capitalizar primera letra
+    const typeName = type.charAt(0).toUpperCase() + type.slice(1);
+    label.innerHTML = `
+      <input type="checkbox" value="${type}" checked> ${typeName}
     `;
-
-    // Drag & drop manual
-    enableDrag(el, item);
-
-    map.appendChild(el);
+    filtersContainer.appendChild(label);
   });
 }
 
-/* ---------- Tipos activos desde filtros ---------- */
-function getActiveTypes(){
-  const boxes = filtersWrap.querySelectorAll('input[type="checkbox"]');
-  const active = new Set();
-  boxes.forEach(b => { if(b.checked) active.add(b.dataset.type); });
-  return active;
+/* --- Renderizado de Puntos (POIs) --- */
+function renderPOIs() {
+  document.querySelectorAll('.poi').forEach(el => el.remove());
+
+  const activeTypes = Array.from(filtersContainer.querySelectorAll('input:checked'))
+                          .map(input => input.value);
+
+  store.forEach(item => {
+    if (activeTypes.includes(item.type)) {
+      createPoiElement(item);
+    }
+  });
 }
 
-/* ---------- Eventos del panel ---------- */
-const mapLegend = document.getElementById('map-legend');
+function createPoiElement(item) {
+  const el = document.createElement('div');
+  el.className = 'poi';
+  el.dataset.type = item.type; 
+  
+  el.style.left = item.x + '%';
+  el.style.top = item.y + '%';
+  
+  el.innerHTML = `
+    <div class="legend">
+      <strong>${item.title}</strong><br>
+      <small>${item.desc}</small>
+    </div>
+  `;
 
-togglePanelBtn.addEventListener('click', () => {
-  const isHidden = panel.classList.toggle('is-hidden');
-  togglePanelBtn.setAttribute('aria-expanded', String(!isHidden));
+  enableDrag(el, item);
 
-  // Mostrar leyenda solo cuando el panel está oculto
-  if (mapLegend) {
-    if (isHidden) {
-      mapLegend.style.display = 'block';
+  map.appendChild(el);
+}
+
+/* --- Drag and Drop --- */
+function enableDrag(element, itemData) {
+  let isDragging = false;
+  
+  element.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    e.stopPropagation(); 
+    element.style.cursor = 'grabbing';
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+
+    const mapRect = map.getBoundingClientRect();
+    
+    let newX = ((e.clientX - mapRect.left) / mapRect.width) * 100;
+    let newY = ((e.clientY - mapRect.top) / mapRect.height) * 100;
+
+    newX = Math.max(0, Math.min(100, newX));
+    newY = Math.max(0, Math.min(100, newY));
+
+    element.style.left = newX + '%';
+    element.style.top = newY + '%';
+    itemData.x = newX;
+    itemData.y = newY;
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      element.style.cursor = 'grab';
+    }
+  });
+}
+
+/* --- Event Listeners --- */
+function setupListeners() {
+  
+  // 1. Alternar Panel/Leyenda
+  togglePanelBtn.addEventListener('click', () => {
+    sideArea.classList.toggle('show-options');
+    const showingOptions = sideArea.classList.contains('show-options');
+    togglePanelBtn.textContent = showingOptions ? ' Ver Leyenda' : ' Opciones';
+  });
+
+  // 2. Filtros
+  filtersContainer.addEventListener('change', renderPOIs);
+
+  // 3. Añadir nuevo punto 
+  map.addEventListener('click', (e) => {
+    if (!addModeCheck.checked) return;
+    if (e.target.closest('.poi')) return; 
+
+    const mapRect = map.getBoundingClientRect();
+    const x = ((e.clientX - mapRect.left) / mapRect.width) * 100;
+    const y = ((e.clientY - mapRect.top) / mapRect.height) * 100;
+
+    const title = prompt("Nombre del lugar:");
+    if (title) {
+      const type = prompt("Tipo (restaurante, cafe, parque, museo):", "restaurante");
+      const cleanType = MAP_TYPES.includes(type) ? type : 'restaurante';
+      
+      const newItem = {
+        id: Date.now().toString(),
+        x: x, y: y,
+        type: cleanType,
+        title: title,
+        desc: 'Nuevo punto añadido'
+      };
+      store.push(newItem);
+      renderPOIs();
+      addModeCheck.checked = false;
+    }
+  });
+
+  // 4. Controles de apariencia
+  mapSizeInput.addEventListener('input', (e) => {
+    document.documentElement.style.setProperty('--map-height', e.target.value + 'vh');
+  });
+
+  poiSizeInput.addEventListener('input', (e) => {
+    document.documentElement.style.setProperty('--poi-size', e.target.value + 'px');
+  });
+
+  // 5. Toggle Tooltips
+  labelsToggle.addEventListener('change', (e) => {
+    if (e.target.checked) {
+      map.classList.remove('hide-legends');
     } else {
-      mapLegend.style.display = 'none';
+      map.classList.add('hide-legends');
     }
-  }
-});
-
-
-
-poiSizeRange.addEventListener('input', () => {
-  map.style.setProperty('--poi-size', poiSizeRange.value + 'px');
-  renderPOIs();
-});
-
-mapSizeRange.addEventListener('input', () => {
-  const v = clamp(+mapSizeRange.value, 50, 100);
-  document.documentElement.style.setProperty('--map-height', v + 'vh');
-});
-
-labelsToggle.addEventListener('change', () => {
-  map.classList.toggle('hide-legends', !labelsToggle.checked);
-});
-
-filtersWrap.addEventListener('change', renderPOIs);
-
-/* ---------- Añadir punto ---------- */
-map.addEventListener('click', (ev) => {
-  if(!addModeCheckbox.checked) return;
-  if(ev.target.closest('.poi')) return; // no al click sobre un poi
-
-  const rect = map.getBoundingClientRect();
-  const x = ((ev.clientX - rect.left) / rect.width) * 100;
-  const y = ((ev.clientY - rect.top)  / rect.height) * 100;
-
-  const title = prompt('Título del punto:');
-  if(!title) return;
-  const desc  = prompt('Descripción:' ) || '';
-  const type  = prompt(`Tipo (${MAP_TYPES.join(', ')}):`, MAP_TYPES[0]) || MAP_TYPES[0];
-
-  const newItem = {
-    id: crypto.randomUUID(),
-    x: clamp(x, 0, 100),
-    y: clamp(y, 0, 100),
-    type: MAP_TYPES.includes(type) ? type : MAP_TYPES[0],
-    title, desc
-  };
-  store.push(newItem);
-  renderPOIs();
-});
-
-/* ---------- Arrastrar para reubicar ---------- */
-function enableDrag(el, item){
-  let dragging = false;
-  let start = null;
-
-  const onDown = (e) => {
-    dragging = true;
-    el.classList.add('dragging');
-    start = getPoint(e);
-    e.preventDefault();
-  };
-
-  const onMove = (e) => {
-    if(!dragging) return;
-    const p = getPoint(e);
-    const dx = p.x - start.x;
-    const dy = p.y - start.y;
-    start = p;
-
-    // convertir desplazamiento en % relativo al tamaño actual
-    const rect = map.getBoundingClientRect();
-    const dxp = (dx / rect.width) * 100;
-    const dyp = (dy / rect.height) * 100;
-
-    item.x = clamp(item.x + dxp, 0, 100);
-    item.y = clamp(item.y + dyp, 0, 100);
-    el.style.left = item.x + '%';
-    el.style.top  = item.y + '%';
-  };
-
-  const onUp = () => {
-    dragging = false;
-    el.classList.remove('dragging');
-  };
-
-  el.addEventListener('mousedown', onDown);
-  window.addEventListener('mousemove', onMove);
-  window.addEventListener('mouseup', onUp);
-
-  el.addEventListener('touchstart', onDown, {passive:false});
-  window.addEventListener('touchmove', onMove, {passive:false});
-  window.addEventListener('touchend', onUp);
-
-  function getPoint(e){
-    if(e.touches && e.touches[0]){
-      return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    }
-    return { x: e.clientX, y: e.clientY };
-  }
+  });
 }
 
-/* ---------- Inicio ---------- */
-renderPOIs();
-
-// Exponer store en consola para depuración
-window._store = store;
+// Iniciar aplicación
+init();s

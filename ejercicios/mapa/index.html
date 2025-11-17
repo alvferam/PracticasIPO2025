@@ -8,73 +8,55 @@
 </head>
 <body>
   <header class="app-header">
-    <h1>Mapa</h1>
-    <button id="toggle-panel" aria-expanded="false" aria-controls="side-panel">⚙️ Panel</button>
+    <h1>Mapa Interactivo</h1>
+    <button id="toggle-panel" aria-expanded="false" aria-controls="side-area">Opciones</button>
   </header>
-
   <main class="layout">
-
-    <div class="side-area">
-      <!-- Leyenda -->
+    <div id="side-area" class="side-area">
       <div id="map-legend" class="map-legend">
         <h2>Leyenda</h2>
         <ul>
-          <li><span class="shape square dark"></span> Hotel (valoración alta)</li>
-          <li><span class="shape square"></span> Hotel (valoración media)</li>
-          <li><span class="shape square light"></span> Hotel (valoración baja)</li>
-
-          <li><span class="shape circle dark"></span> Punto de interés (valoración alta)</li>
-          <li><span class="shape circle"></span> Punto de interés (valoración media)</li>
-          <li><span class="shape circle light"></span> Punto de interés (valoración baja)</li>
-
-          <li><span class="shape triangle dark"></span> Restaurante (valoración alta)</li>
-          <li><span class="shape triangle"></span> Restaurante (valoración media)</li>
-          <li><span class="shape triangle light"></span> Restaurante (valoración baja)</li>
+          <li><span class="shape square red"></span> Restaurante</li>
+          <li><span class="shape square purple"></span> Café</li>
+          <li><span class="shape circle green"></span> Parque</li>
+          <li><span class="shape triangle orange"></span> Museo</li>
         </ul>
+        <p class="hint" style="margin-top:1rem; font-size: 0.85rem;">
+          Pasa el ratón sobre un punto para ver información.
+        </p>
       </div>
-
-      <!-- Panel de opciones -->
-      <aside id="side-panel" class="side-panel is-hidden">
-        <h2>Opciones</h2>
-
+      <aside id="side-panel" class="side-panel">
+        <h2>Configuración</h2>
         <section>
-          <h3>Vistas (filtrar por tipo)</h3>
+          <h3>Filtrar por tipo</h3>
           <div id="filters" class="filters">
-            <!-- checkboxes generados por JS -->
-          </div>
+            </div>
         </section>
-
         <section>
-          <h3>Añadir punto</h3>
-          <label class="row"><input type="checkbox" id="add-mode"> Activar modo añadir (clic en el mapa)</label>
+          <h3>Acciones</h3>
+          <label class="row"><input type="checkbox" id="add-mode"> Modo "Añadir Punto" (clic en mapa)</label>
         </section>
-
         <section>
-          <h3>Aspecto</h3>
-          <label class="row">Tamaño del mapa
-            <input type="range" id="map-size" min="50" max="100" value="100">
+          <h3>Apariencia</h3>
+          <label class="row">Zoom mapa
+            <input type="range" id="map-size" min="50" max="100" value="80">
           </label>
-          <label class="row">Tamaño de ítems
-            <input type="range" id="poi-size" min="8" max="28" value="14">
+          <label class="row">Tamaño puntos
+            <input type="range" id="poi-size" min="10" max="30" value="16">
           </label>
         </section>
-
-        <p class="hint">Sugerencia: con <kbd>Mayús</kbd> presionado también puedes arrastrar para mover el mapa si tu trackpad lo requiere.</p>
+        <p class="hint">Sugerencia: Arrastra los puntos para reubicarlos.</p>
       </aside>
     </div>
-
     <section class="map-wrapper">
       <div id="map" class="map" role="application" aria-label="Mapa interactivo"
-           style="--poi-size: 14px;"
-           data-bg="./img/mapa-ciudad.jpg">
-        <!-- Puntos generados por JS -->
-        <div class="map-controls">
-          <label class="row small"><input type="checkbox" id="labels-toggle" checked> Mostrar leyendas al pasar</label>
+          style="--poi-size: 16px;"
+          data-bg="./img/mapa-ciudad.jpg"> <div class="map-controls">
+          <label class="row small"><input type="checkbox" id="labels-toggle" checked> Ver tooltips</label>
         </div>
       </div>
     </section>
   </main>
-
   <script src="script.js"></script>
 </body>
 </html>
