@@ -1,20 +1,21 @@
-// script.js (Unificado)
+// script.js
 
 // --- 1. Elementos del DOM ---
 const inicioBtn = document.getElementById('inicio');
+const selectorModo = document.getElementById('selectorModo');
 const tamañoTableroInput = document.getElementById('tamañoTablero');
 const tamañoFichaSelect = document.getElementById('tamañoFicha');
+const grupoTamañoFicha = document.getElementById('grupoTamañoFicha');
 const formaFichaSelect = document.getElementById('formaFicha');
+const grupoFormaFicha = document.getElementById('grupoFormaFicha');
 const contadorIntercambiosEl = document.getElementById('contadorIntercambios');
 const tiempoJuegoEl = document.getElementById('tiempoJuego');
+const zonaJuegoEl = document.getElementById('zona-juego');
+
+// Modal
 const modalAyudaEl = document.getElementById('modalAyuda');
 const btnAyuda = document.getElementById('btnAyuda');
 const cerrarModalEl = document.querySelector('.modal__close');
-
-// --- Elementos Específicos ---
-const tableroSimpleEl = document.getElementById('tablero');
-const tableroA_El = document.getElementById('tablero-A');
-const tableroB_El = document.getElementById('tablero-B');
 
 // --- 2. Estado del Juego ---
 let fichaArrastrada = null;
@@ -22,13 +23,25 @@ let N = 0;
 let contadorIntercambios = 0;
 let idIntervalo = 0;
 let segundos = 0;
-
-// --- Detección de Modo ---
-// Detecta en qué página estamos al cargar
-const modoJuego = tableroA_El ? 'doble' : 'simple';
+let modoActual = 'clasico'; 
 
 // --- 3. Event Listeners ---
 inicioBtn.addEventListener('click', iniciarJuego);
+
+selectorModo.addEventListener('change', (e) => {
+    modoActual = e.target.value;
+
+    if (modoActual === 'imagen') {
+        grupoTamañoFicha.style.display = 'none';
+        grupoFormaFicha.style.display = 'none';
+        tamañoTableroInput.max = 10;
+    } else {
+        grupoTamañoFicha.style.display = 'flex';
+        grupoFormaFicha.style.display = 'flex';
+        tamañoTableroInput.max = 6; 
+    }
+});
+
 // Listeners Modal
 btnAyuda.addEventListener('click', () => modalAyudaEl.classList.remove('modal--hidden'));
 cerrarModalEl.addEventListener('click', () => modalAyudaEl.classList.add('modal--hidden'));
@@ -38,13 +51,59 @@ window.addEventListener('click', (e) => {
 
 // --- 4. Función Principal ---
 function iniciarJuego() {
-    // 4.1. Leer valores comunes
-    N = parseInt(tamañoTableroInput.value);
-    const tamañoFicha = tamañoFichaSelect.value;
-    const formaFicha = formaFichaSelect.value;
-    document.documentElement.style.setProperty('--ficha-size', tamañoFicha);
+    contadorIntercambios = 0;
+    segundos = 0;
+    contadorIntercambiosEl.textContent = '0';
+    tiempoJuegoEl.textContent = '0';
+    if (idIntervalo) clearInterval(idIntervalo);
+    idIntervalo = setInterval(() => { segundos++; tiempoJuegoEl.textContent = segundos; }, 1000);
 
-    // 4.2. Generar y barajar fichas
+    modoActual = selectorModo.value;
+    N = parseInt(tamañoTableroInput.value, 10);
+    const formaFicha = formaFichaSelect.value;
+    
+    zonaJuegoEl.innerHTML = '';
+    
+    if (modoActual !== 'imagen') {
+        const tamañoFicha = tamañoFichaSelect.value;
+        document.documentElement.style.setProperty('--ficha-size', tamañoFicha);
+    }
+
+    if (modoActual === 'imagen') {
+        generarTableroImagen();
+        zonaJuegoEl.classList.remove('modo-doble-activo');
+    } 
+    else if (modoActual === 'doble') {
+        crearTableroColores('Tablero A');
+        crearTableroColores('Tablero B');
+        zonaJuegoEl.classList.add('modo-doble-activo');
+    } 
+    else {
+        crearTableroColores(null);
+        zonaJuegoEl.classList.remove('modo-doble-activo');
+    }
+}
+
+// --- 5. Funciones Generadoras ---
+
+function crearTableroColores(titulo) {
+    const contenedor = document.createElement('div');
+    contenedor.style.display = 'flex';
+    contenedor.style.flexDirection = 'column';
+    contenedor.style.alignItems = 'center';
+
+    if (titulo) {
+        const h3 = document.createElement('h3');
+        h3.textContent = titulo;
+        h3.style.margin = '0 0 10px 0';
+        h3.style.color = '#555';
+        contenedor.appendChild(h3);
+    }
+    
+    const grid = document.createElement('div');
+    grid.classList.add('tablero');
+    grid.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
+    
     let fichas = [];
     for (let i = 0; i < N; i++) {
         for (let j = 0; j < N; j++) {
@@ -52,91 +111,80 @@ function iniciarJuego() {
         }
     }
     barajarFichas(fichas);
-
-    // 4.3. Lógica de creación
-    if (modoJuego === 'doble') {
-        // --- INICIO LÓGICA DOBLE ---
-        tableroA_El.innerHTML = '';
-        tableroB_El.innerHTML = '';
-        tableroA_El.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
-        tableroB_El.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
-
-        // Generar segundo mazo de fichas
-        let fichasB = [];
-        for (let i = 0; i < N; i++) { for (let j = 0; j < N; j++) { fichasB.push(i); } }
-        barajarFichas(fichasB);
-
-        fichas.forEach(colorIndex => crearFicha(tableroA_El, colorIndex, formaFicha));
-        fichasB.forEach(colorIndex => crearFicha(tableroB_El, colorIndex, formaFicha));
-    } else {
-        // --- INICIO LÓGICA SIMPLE ---
-        tableroSimpleEl.innerHTML = '';
-        tableroSimpleEl.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
-        fichas.forEach(colorIndex => crearFicha(tableroSimpleEl, colorIndex, formaFicha));
-    }
-
-    // 4.4. Reiniciar contadores
-    contadorIntercambios = 0;
-    contadorIntercambiosEl.textContent = '0';
-    segundos = 0;
-    tiempoJuegoEl.textContent = '0';
-    if (idIntervalo) clearInterval(idIntervalo); 
-    idIntervalo = setInterval(() => {
-        segundos++;
-        tiempoJuegoEl.textContent = segundos;
-    }, 1000);
+    
+    const forma = formaFichaSelect.value;
+    fichas.forEach(colorIndex => {
+        const ficha = document.createElement('div');
+        ficha.classList.add('ficha', `color-${colorIndex}`, `forma-${forma}`);
+        ficha.dataset.ficha = colorIndex;
+        ficha.setAttribute('draggable', 'true');
+        añadirEventListeners(ficha);
+        grid.appendChild(ficha);
+    });
+    
+    contenedor.appendChild(grid);
+    zonaJuegoEl.appendChild(contenedor);
 }
 
-// --- 5. Funciones de Creación ---
-function crearFicha(tablero, colorIndex, formaFicha) {
-    const ficha = document.createElement('div');
-    ficha.classList.add('ficha', `color-${colorIndex}`, `forma-${formaFicha}`);
-    ficha.dataset.ficha = colorIndex; 
-    ficha.setAttribute('draggable', 'true');
-    añadirEventListeners(ficha);
-    tablero.appendChild(ficha);
+function generarTableroImagen() {
+    const grid = document.createElement('div');
+    grid.classList.add('tablero', 'tablero-con-imagen');
+    grid.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
+    
+    let fichas = [];
+    for (let i = 0; i < N * N; i++) { fichas.push(i); }
+    barajarFichas(fichas);
+
+    fichas.forEach((posicionOriginal, i) => {
+        const ficha = document.createElement('div');
+        ficha.classList.add('ficha'); 
+        ficha.dataset.ficha = posicionOriginal;
+        ficha.setAttribute('draggable', 'true');
+        
+        const px = (posicionOriginal % N) * 100 / (N - 1);
+        const py = Math.floor(posicionOriginal / N) * 100 / (N - 1);
+        ficha.style.backgroundPosition = `${px}% ${py}%`;
+        
+        añadirEventListeners(ficha);
+        grid.appendChild(ficha);
+    });
+    zonaJuegoEl.appendChild(grid);
 }
 
-// --- 6. Lógica de Drag & Drop ---
+// --- 6. Drag & Drop ---
 function añadirEventListeners(ficha) {
     ficha.addEventListener('dragstart', handleDragStart);
-    ficha.addEventListener('dragover', handleDragOver);
+    ficha.addEventListener('dragover', (e) => e.preventDefault());
+    ficha.addEventListener('dragenter', handleDragEnter);
     ficha.addEventListener('dragleave', handleDragLeave);
+    ficha.addEventListener('drop', handleDrop);
     ficha.addEventListener('dragend', handleDragEnd);
-
-    if (modoJuego === 'doble') {
-        // --- INICIO LÓGICA DOBLE ---
-        ficha.addEventListener('dragenter', handleDragEnter_Doble);
-        ficha.addEventListener('drop', handleDrop_Doble);
-    } else {
-        // --- INICIO LÓGICA SIMPLE ---
-        ficha.addEventListener('dragenter', handleDragEnter_Simple);
-        ficha.addEventListener('drop', handleDrop_Simple);
-    }
 }
 
-// --- Handlers Comunes ---
 function handleDragStart(e) {
-    fichaArrastrada = this; 
+    fichaArrastrada = this;
     this.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', this.dataset.ficha);
 }
-function handleDragOver(e) { e.preventDefault(); }
-function handleDragLeave() { this.classList.remove('over'); }
+
+function handleDragEnter(e) {
+    e.preventDefault();
+    if (this !== fichaArrastrada) this.classList.add('over');
+}
+
+function handleDragLeave() {
+    this.classList.remove('over');
+}
+
 function handleDragEnd() {
     this.classList.remove('dragging');
     document.querySelectorAll('.ficha').forEach(f => f.classList.remove('over'));
     fichaArrastrada = null;
 }
 
-// --- Handlers Modo Simple ---
-function handleDragEnter_Simple(e) {
-    e.preventDefault();
-    if (this !== fichaArrastrada) { this.classList.add('over'); }
-}
-function handleDrop_Simple(e) {
-    e.stopPropagation(); 
+function handleDrop(e) {
+    e.stopPropagation();
+
     if (fichaArrastrada && this !== fichaArrastrada) {
         intercambiarFichas(this, fichaArrastrada);
         comprobarVictoria();
@@ -144,39 +192,67 @@ function handleDrop_Simple(e) {
     return false;
 }
 
-// --- Handlers Modo Doble ---
-function handleDragEnter_Doble(e) {
-    e.preventDefault();
-    if (fichaArrastrada && this.parentElement !== fichaArrastrada.parentElement) {
-        this.classList.add('over');
-    }
-}
-function handleDrop_Doble(e) {
-    e.stopPropagation(); 
-    if (fichaArrastrada && this.parentElement !== fichaArrastrada.parentElement) {
-        intercambiarFichas(this, fichaArrastrada);
-        comprobarVictoria();
-    }
-    return false;
-}
+// --- 7. Lógica de Juego e Intercambio ---
 
-// --- 7. Funciones Auxiliares ---
-
-// Función de intercambio
 function intercambiarFichas(fichaA, fichaB) {
-    const colorA = fichaA.dataset.ficha;
-    const colorB = fichaB.dataset.ficha;
+    const dataA = fichaA.dataset.ficha;
+    const dataB = fichaB.dataset.ficha;
+    
+    fichaA.dataset.ficha = dataB;
+    fichaB.dataset.ficha = dataA;
 
-    fichaA.classList.remove(`color-${colorA}`);
-    fichaA.classList.add(`color-${colorB}`);
-    fichaA.dataset.ficha = colorB;
-
-    fichaB.classList.remove(`color-${colorB}`);
-    fichaB.classList.add(`color-${colorA}`);
-    fichaB.dataset.ficha = colorA;
+    if (modoActual === 'imagen') {
+        const bgA = fichaA.style.backgroundPosition;
+        fichaA.style.backgroundPosition = fichaB.style.backgroundPosition;
+        fichaB.style.backgroundPosition = bgA;
+    } else {
+        fichaA.classList.remove(`color-${dataA}`);
+        fichaB.classList.remove(`color-${dataB}`);
+        
+        fichaA.classList.add(`color-${dataB}`);
+        fichaB.classList.add(`color-${dataA}`);
+    }
 
     contadorIntercambios++;
     contadorIntercambiosEl.textContent = contadorIntercambios;
+}
+
+function comprobarVictoria() {
+    const tableros = document.querySelectorAll('.tablero');
+    let victoriaTotal = true;
+
+    tableros.forEach(tablero => {
+        if (!tableroEstaResuelto(tablero)) {
+            victoriaTotal = false;
+        }
+    });
+
+    if (victoriaTotal && tableros.length > 0) {
+        setTimeout(() => {
+            alert(`¡HAS GANADO EL MODO ${modoActual.toUpperCase()}!\nTiempo: ${segundos}s\nIntercambios: ${contadorIntercambios}`);
+            clearInterval(idIntervalo);
+        }, 100);
+    }
+}
+
+function tableroEstaResuelto(tablero) {
+    const fichas = Array.from(tablero.children);
+    
+    if (modoActual === 'imagen') {
+        for (let i = 0; i < fichas.length; i++) {
+            if (parseInt(fichas[i].dataset.ficha) !== i) return false;
+        }
+        return true;
+    } else {
+        for (let i = 0; i < N; i++) {
+            const colorFila = fichas[i * N].dataset.ficha;
+            
+            for (let j = 1; j < N; j++) {
+                if (fichas[i * N + j].dataset.ficha !== colorFila) return false;
+            }
+        }
+        return true;
+    }
 }
 
 function barajarFichas(array) {
@@ -184,46 +260,4 @@ function barajarFichas(array) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
-}
-
-// Función de comprobación
-function comprobarVictoria() {
-    let victoria = false;
-    
-    if (modoJuego === 'doble') {
-        // --- INICIO LÓGICA DOBLE ---
-        const ganoA = tableroEstaResuelto(tableroA_El);
-        const ganoB = tableroEstaResuelto(tableroB_El);
-        if (ganoA && ganoB) {
-            victoria = true;
-            alert(`¡INCREÍBLE! ¡Has resuelto AMBOS tableros! 
-                \nTiempo: ${segundos}s \nIntercambios: ${contadorIntercambios}`);
-        }
-    } else {
-        // --- INICIO LÓGICA SIMPLE ---
-        if (tableroEstaResuelto(tableroSimpleEl)) {
-            victoria = true;
-            alert(`¡Felicidades, has ganado!
-                \nTiempo: ${segundos}s \nIntercambios: ${contadorIntercambios}`);
-        }
-    }
-
-    if (victoria) {
-        clearInterval(idIntervalo); 
-        idIntervalo = 0; 
-    }
-}
-
-// Función auxiliar de comprobación
-function tableroEstaResuelto(tablero) {
-    const todasFichas = Array.from(tablero.children);
-    for (let i = 0; i < N; i++) { 
-        const primerColor = todasFichas[i * N].dataset.ficha;
-        for (let j = 1; j < N; j++) {
-            if (todasFichas[i * N + j].dataset.ficha !== primerColor) {
-                return false; 
-            }
-        }
-    }
-    return true; 
 }

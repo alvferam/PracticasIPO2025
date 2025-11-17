@@ -1,169 +1,151 @@
 /* style.css */
 
-/* 1. Reseteo básico y variables :root */
+/* 1. COLORES */
 :root {
-    /* Variable para el tamaño de la ficha, controlada por JS */
-    --ficha-size: 60px; 
-    
-    /* Paleta de colores HSL */
-    --color-fondo: hsl(210, 20%, 98%);
-    --color-borde: hsl(210, 20%, 80%);
-    --color-texto: hsl(210, 10%, 20%);
-    --color-acento: hsl(214, 84%, 56%);
-    --color-acento-hover: hsl(214, 84%, 46%);
-    
-    /* Paleta de 7 colores para las fichas */
-    --color-0: hsl(0, 72%, 51%);  
-    --color-1: hsl(45, 100%, 51%); 
-    --color-2: hsl(134, 61%, 41%); 
-    --color-3: hsl(211, 100%, 50%); 
-    --color-4: hsl(265, 82%, 58%); 
-    --color-5: hsl(30, 82%, 58%);  
-    --color-6: hsl(188, 82%, 58%); 
+    --ficha-size: 60px;
+
+    --color-0: #e74c3c; 
+    --color-1: #27ae60; 
+    --color-2: #2980b9; 
+    --color-3: #f1c40f; 
+    --color-4: #8e44ad; 
+    --color-5: #e67e22; 
+    --color-6: #1abc9c; 
+    --color-7: #34495e; 
+    --color-8: #ecf0f1; 
+    --color-9: #2c3e50; 
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
+/* 2. RESET & LAYOUT BASICO */
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: var(--color-fondo);
-    color: var(--color-texto);
-    padding: 1rem;
 }
 
-/* 2. Contenedor Principal */
 .juego-contenedor {
-    width: 100%;
-    max-width: 800px; 
-    padding: 2rem;
     background-color: white;
+    padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 8px 24px hsla(0, 0%, 0%, 0.05);
-}
-
-.juego-contenedor h1 {
-    font-size: 1.75rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
     text-align: center;
-    margin-bottom: 1.5rem;
+    width: 95%;
+    max-width: 1000px;
 }
 
-/* 3. Controles */
-.controles {
+/* 3. ZONA DE JUEGO  */
+.zona-juego {
     display: flex;
-    flex-direction: column; 
-    gap: 1rem; 
-    margin-bottom: 1.5rem;
-}
-
-.controles__fila {
-    display: flex;
+    justify-content: center;
+    gap: 2rem;
     flex-wrap: wrap; 
+    margin-top: 20px;
+}
+
+.modo-doble-activo {
+    display: flex;
+}
+
+/* 4. TABLERO BASE */
+.tablero {
+    display: grid;
+    gap: 5px;
+    border: 5px solid #343a40;
+    background-color: #dee2e6;
+    padding: 5px;
+    width: fit-content;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* 5. MODO IMAGEN */
+.tablero-con-imagen {
+    width: 500px !important;
+    height: 500px !important;
+    background-image: url('https://www.tudn.com/_next/image?url=https%3A%2F%2Fst1.uvnimg.com%2F11%2Fc7%2Ff9f4494347ab9150fa5cd4b1fa15%2Fgettyimages-55768567.jpg&w=1280&q=75');
+    background-size: 100% 100%;
+    padding: 0;
+    gap: 1px;
+    border: 8px solid #555;
+}
+
+/* Responsive imagen */
+@media (max-width: 600px) {
+    .tablero-con-imagen { width: 90vw !important; height: 90vw !important; }
+    .tablero-con-imagen .ficha { background-size: 90vw 90vw; }
+}
+
+/* 6. FICHAS */
+.ficha {
+    width: var(--ficha-size);
+    height: var(--ficha-size);
+    cursor: grab;
+    transition: transform 0.2s;
+    display: flex;
     justify-content: center;
     align-items: center;
-    gap: 1rem;
 }
 
+.ficha.dragging {
+    opacity: 0.5;
+    transform: scale(1.1);
+    z-index: 100;
+}
+
+.ficha.over {
+    outline: 3px dashed #339af0;
+    filter: brightness(0.8);
+}
+
+/* Fichas en modo imagen*/
+.tablero-con-imagen .ficha {
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    background-image: inherit;
+    background-size: 500px 500px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 0 !important;
+}
+
+/* 7. CONTROLES */
+.controles {
+    background-color: #f1f3f5;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.controles__fila {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
 .control-grupo {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    align-items: flex-start;
 }
-
-.control-grupo label {
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-input[type="number"],
-select {
-    padding: 0.5rem;
-    border: 2px solid var(--color-borde);
-    border-radius: 6px;
-    font-size: 1rem;
-    background-color: white;
-}
-
-/* Botones */
 button {
-    padding: 0.6rem 1rem;
-    border: none;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-#inicio {
-    background-color: var(--color-acento);
+    padding: 0.5rem 1.5rem;
+    background-color: #339af0;
     color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
-#inicio:hover {
-    background-color: var(--color-acento-hover);
-}
+button:hover { background-color: #228be6; }
+.button-secundario { background-color: #868e96; }
+.button-secundario:hover { background-color: #495057; }
 
-.button-secundario {
-    border: 2px solid var(--color-borde);
-    background-color: var(--color-fondo);
-    color: var(--color-texto);
-}
-.button-secundario:hover {
-    background-color: var(--color-borde);
-}
-
-
-/* 4. Estado */
-.estado-juego {
-    display: flex;
-    justify-content: space-around;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    font-size: 1.1rem;
-    font-weight: 500;
-}
-.estado-juego p {
-    padding: 0.5rem 1rem;
-    background-color: var(--color-fondo);
-    border-radius: 6px;
-}
-
-/* 5. Estilo de Tablero */
-.tablero {
-    display: grid;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    background-color: var(--color-fondo);
-    border: 2px solid var(--color-borde);
-    border-radius: 8px;
-    width: max-content; 
-    margin: 0 auto; 
-}
-
-/* 6. Fichas */
-.ficha {
-    width: var(--ficha-size); 
-    height: var(--ficha-size);
-    border: 3px solid transparent;
-    transition: transform 0.2s, border-color 0.2s, border-radius 0.2s;
-}
-/* Formas de las fichas (Variante) */
-.forma-cuadrado { border-radius: 8px; }
-.forma-circulo { border-radius: 50%; }
-
-/* Estilos Drag & Drop */
-.ficha[draggable="true"] { cursor: grab; }
-.ficha.dragging { opacity: 0.4; cursor: grabbing; transform: scale(0.9); }
-.ficha.over { border-color: var(--color-acento); border-style: dashed; }
-
-/* Clases de Color */
+/* 8. MAPA DE COLORES ) */
 .color-0 { background-color: var(--color-0); }
 .color-1 { background-color: var(--color-1); }
 .color-2 { background-color: var(--color-2); }
@@ -172,48 +154,16 @@ button {
 .color-5 { background-color: var(--color-5); }
 .color-6 { background-color: var(--color-6); }
 
+/* 9. FORMAS */
+.forma-circulo { border-radius: 50%; }
+.forma-cuadrado { border-radius: 4px; }
 
-/* 7. Modal */
+/* 10. MODAL */
 .modal {
-    position: fixed;
-    z-index: 10;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: hsla(0, 0%, 0%, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); display: flex;
+    justify-content: center; align-items: center; z-index: 999;
 }
-.modal--hidden { display: none; }
-.modal__content {
-    background-color: white;
-    padding: 1.5rem 2rem;
-    width: 90%;
-    max-width: 500px;
-    border-radius: 8px;
-    position: relative;
-    box-shadow: 0 4px 15px hsla(0, 0%, 0%, 0.2);
-}
-.modal__close {
-    color: #aaa;
-    float: right;
-    font-size: 2rem;
-    font-weight: bold;
-    line-height: 1;
-    cursor: pointer;
-}
-.modal__close:hover { color: var(--color-texto); }
-.modal__content h2 { margin-top: 0; margin-bottom: 1rem; color: var(--color-acento); }
-.modal__content ul { margin-top: 1rem; padding-left: 1.5rem; }
-.modal__content li { margin-bottom: 0.5rem; }
-
-
-/* 8. --- ESTILOS SOLO PARA TABLERO DOBLE --- */
-.tableros-contenedor {
-    display: flex;
-    flex-wrap: wrap; 
-    justify-content: center;
-    gap: 1rem;
-}
+.modal--hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.modal__content { background: white; padding: 2rem; border-radius: 8px; width: 90%; max-width: 400px; position: relative; }
+.modal__close { position: absolute; top: 10px; right: 20px; cursor: pointer; font-size: 1.5rem; }

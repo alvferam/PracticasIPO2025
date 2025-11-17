@@ -3,141 +3,58 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Piano Web - IPO</title>
-
+    <title>Piano Web - Variantes</title>
     <link rel="stylesheet" href="style.css" />
-
-    <!-- Buenas prácticas: script en la cabecera con defer -->
     <script src="script.js" defer></script>
   </head>
-
   <body>
     <main class="page">
       <header class="page__header">
         <h1 class="page__title">Piano Web</h1>
         <p class="page__subtitle">
-          Práctica IPO · Web Audio API · Posicionamiento y Reubicación
+          Variantes: Multioctava Dinámica y Volumen
         </p>
       </header>
-
       <section class="piano">
         <header class="piano__header">
           <div class="piano__control-group">
-            <label for="waveform-select" class="piano__label">
-              Forma de onda
-            </label>
+            <label for="waveform-select" class="piano__label">Onda</label>
             <select id="waveform-select" class="piano__select">
-              <option value="sine">Senoidal (sine)</option>
-              <option value="square">Cuadrada (square)</option>
-              <option value="triangle">Triangular (triangle)</option>
-              <option value="sawtooth">Dientes de sierra (sawtooth)</option>
+              <option value="sine">Sinusoidad</option>
+              <option value="square">Cuadrada</option>
+              <option value="triangle">Triangular</option>
+              <option value="sawtooth">Diente de sierra</option>
             </select>
           </div>
+          <div class="piano__control-group">
+            <label for="octaves-select" class="piano__label">Octavas</label>
+            <select id="octaves-select" class="piano__select">
+              <option value="1">1 Octava</option>
+              <option value="2" selected>2 Octavas</option>
+              <option value="3">3 Octavas</option>
+            </select>
+          </div>
+          <div class="piano__control-group">
+            <label for="volume-control" class="piano__label">Vol</label>
+            <input 
+              type="range" 
+              id="volume-control" 
+              min="0" max="1" step="0.1" value="0.5" 
+              class="piano__range"
+            />
+          </div>
+          <div class="piano__control-group">
+            <label for="delay-toggle" class="piano__label">Eco</label>
+            <input type="checkbox" id="delay-toggle" style="accent-color: var(--color-accent);">
+          </div>
         </header>
-
-        <div class="piano__keyboard">
-          <!-- Teclas blancas -->
-          <div class="piano__white-keys">
-            <button
-              class="piano__key piano__key--white"
-              data-note="C4"
-              data-freq="261.63"
-            >
-              Do
-            </button>
-            <button
-              class="piano__key piano__key--white"
-              data-note="D4"
-              data-freq="293.66"
-            >
-              Re
-            </button>
-            <button
-              class="piano__key piano__key--white"
-              data-note="E4"
-              data-freq="329.63"
-            >
-              Mi
-            </button>
-            <button
-              class="piano__key piano__key--white"
-              data-note="F4"
-              data-freq="349.23"
-            >
-              Fa
-            </button>
-            <button
-              class="piano__key piano__key--white"
-              data-note="G4"
-              data-freq="392.0"
-            >
-              Sol
-            </button>
-            <button
-              class="piano__key piano__key--white"
-              data-note="A4"
-              data-freq="440.0"
-            >
-              La
-            </button>
-            <button
-              class="piano__key piano__key--white"
-              data-note="B4"
-              data-freq="493.88"
-            >
-              Si
-            </button>
-            
-          </div>
-
-          <!-- Teclas negras (reubicación con position + transform) -->
-          <div class="piano__black-keys">
-            <!-- C#4 -->
-            <button
-              class="piano__key piano__key--black piano__key--black--csharp"
-              data-note="C#4"
-              data-freq="277.18"
-              aria-label="Do sostenido 4"
-            ></button>
-
-            <!-- D#4 -->
-            <button
-              class="piano__key piano__key--black piano__key--black--dsharp"
-              data-note="D#4"
-              data-freq="311.13"
-              aria-label="Re sostenido 4"
-            ></button>
-
-            <!-- F#4 -->
-            <button
-              class="piano__key piano__key--black piano__key--black--fsharp"
-              data-note="F#4"
-              data-freq="369.99"
-              aria-label="Fa sostenido 4"
-            ></button>
-
-            <!-- G#4 -->
-            <button
-              class="piano__key piano__key--black piano__key--black--gsharp"
-              data-note="G#4"
-              data-freq="415.3"
-              aria-label="Sol sostenido 4"
-            ></button>
-
-            <!-- A#4 -->
-            <button
-              class="piano__key piano__key--black piano__key--black--asharp"
-              data-note="A#4"
-              data-freq="466.16"
-              aria-label="La sostenido 4"
-            ></button>
-          </div>
+        <div class="piano__keyboard" id="keyboard-container">
+          <div class="piano__white-keys" id="white-keys-container"></div>
+          <div class="piano__black-keys" id="black-keys-container"></div>
         </div>
-
         <footer class="piano__footer">
           <p class="piano__help">
-            Pulsa una tecla para escuchar la nota. Cambia la forma de onda para
-            modificar el timbre.
+            Usa el selector para cambiar el tamaño del piano.
           </p>
         </footer>
       </section>
