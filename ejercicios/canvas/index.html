@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nebula Defender - Proyecto Canvas IPO</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <div id="ui-layer">
+        <div class="hud-panel">
+            <div id="scoreDisplay">PUNTOS: 0</div>
+            <div id="livesDisplay">VIDAS: 3</div>
+        </div>
+        <div class="controls-hint">
+            <p>Mover: <span class="key">W</span> <span class="key">A</span> <span class="key">S</span> <span class="key">D</span></p>
+            <p>Apuntar: <b>Ratón</b> | Disparar: <b>Clic Izq</b></p>
+        </div>
+    </div>
+    <div id="startModal" class="modal">
+        <h1>Nebula Defender</h1>
+        <p>Defiende el núcleo. Destruye a los invasores.</p>
+        <button id="startBtn">INICIAR MISIÓN</button>
+    </div>
+    <div id="gameOverModal" class="modal hidden">
+        <h1 style="color: var(--danger-color)">Misión Fallida</h1>
+        <p>Puntuación Final: <span id="finalScore">0</span></p>
+        <button id="restartBtn">REINTENTAR</button>
+    </div>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
