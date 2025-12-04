@@ -1,5 +1,5 @@
 import { AudioEngine } from './AudioEngine.js';
-import { Player, Projectile, Enemy, Particle } from './Entities.js';
+import { Player, Base, PowerUp, Projectile, Enemy, Particle } from './Entities.js';
 
 /* ----------------------------------------------------
     CONFIGURACIÓN E INICIALIZACIÓN
@@ -19,17 +19,25 @@ const startBtn = document.getElementById('startBtn');
 const restartBtn = document.getElementById('restartBtn');
 
 /* ----------------------------------------------------
-    ESTADO GLOBAL
+    ESTADO GLOBAL Y TEMPORIZADORES (FIX SETINTERVAL)
    ---------------------------------------------------- */
 let player;
+let base;
 let projectiles = [];
 let enemies = [];
 let particles = [];
+let powerUps = [];
+
 let animationId;
 let score = 0;
 let lives = 3;
 let gameActive = false;
-let spawnInterval;
+
+let lastTime = 0;
+let enemySpawnTimer = 0;
+let enemySpawnInterval = 1000; 
+let powerUpSpawnTimer = 0;
+let powerUpSpawnInterval = 10000; 
 
 const mouse = { x: canvas.width / 2, y: canvas.height / 2 };
 const keys = { w: false, a: false, s: false, d: false };
@@ -44,61 +52,47 @@ function drawGrid() {
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
     ctx.lineWidth = 1;
     ctx.beginPath();
-
     const gridSize = 50;
-    
-    // Verticales
     for (let x = 0; x <= canvas.width; x += gridSize) {
         ctx.moveTo(x, 0);
         ctx.lineTo(x, canvas.height);
     }
-    
-    // Horizontales
     for (let y = 0; y <= canvas.height; y += gridSize) {
         ctx.moveTo(0, y);
         ctx.lineTo(canvas.width, y);
     }
-    
     ctx.stroke();
 }
 
 function drawLaser() {
     if (!player) return;
-
     ctx.save();
     ctx.beginPath();
-    
-    // Línea guía
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.strokeStyle = player.powerUpActive ? 'rgba(255, 255, 0, 0.3)' : 'rgba(255, 255, 255, 0.3)';
     ctx.lineWidth = 2;
     ctx.setLineDash([5, 15]);
-    
     ctx.moveTo(player.x, player.y);
     ctx.lineTo(mouse.x, mouse.y);
     ctx.stroke();
+    ctx.restore();
     
     // Mirilla
     ctx.beginPath();
     ctx.arc(mouse.x, mouse.y, 8, 0, Math.PI * 2);
-    ctx.setLineDash([]);
     ctx.strokeStyle = 'var(--accent-color)';
     ctx.stroke();
-    
-    ctx.restore();
 }
 
 /* ----------------------------------------------------
     LÓGICA DEL JUEGO
    ---------------------------------------------------- */
 
-function spawnEnemies() {
-    spawnInterval = setInterval(() => {
-        if (!gameActive) return;
-
+// Función de spawn controlada por Delta Time 
+function handleSpawns(deltaTime) {
+    enemySpawnTimer += deltaTime;
+    if (enemySpawnTimer > enemySpawnInterval) {
         const radius = Math.random() * (30 - 10) + 10;
         let x, y;
-
-        // Aparición en bordes
         if (Math.random() < 0.5) {
             x = Math.random() < 0.5 ? 0 - radius : canvas.width + radius;
             y = Math.random() * canvas.height;
@@ -106,22 +100,31 @@ function spawnEnemies() {
             x = Math.random() * canvas.width;
             y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius;
         }
-
-        const color = `hsl(${Math.random() * 40}, 100%, 50%)`;
-        const angle = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x);
         
+        const color = `hsl(${Math.random() * 40}, 100%, 50%)`;
+        
+        const angle = Math.atan2(base.y - y, base.x - x);
         const velocity = {
-            x: Math.cos(angle) * (1 + Math.random()),
-            y: Math.sin(angle) * (1 + Math.random())
+            x: Math.cos(angle),
+            y: Math.sin(angle)
         };
-
+        
         enemies.push(new Enemy(x, y, radius, color, velocity));
-    }, 1000);
+        enemySpawnTimer = 0;
+    }
+
+    // 2. Spawn PowerUps (Triple Disparo)
+    powerUpSpawnTimer += deltaTime;
+    if (powerUpSpawnTimer > powerUpSpawnInterval) {
+        const x = Math.random() * (canvas.width - 100) + 50;
+        const y = Math.random() * (canvas.height - 100) + 50;
+        powerUps.push(new PowerUp(x, y));
+        powerUpSpawnTimer = 0;
+    }
 }
 
 function createExplosion(x, y, color) {
     audio.playSound('explosion');
-    
     for (let i = 0; i < 8; i++) {
         particles.push(new Particle(x, y, Math.random() * 3, color, {
             x: (Math.random() - 0.5) * (Math.random() * 6),
@@ -133,8 +136,6 @@ function createExplosion(x, y, color) {
 function checkGameOver() {
     lives--;
     livesEl.innerText = `VIDAS: ${lives}`;
-    
-    // Efecto visual de daño
     document.body.style.backgroundColor = 'rgba(255,0,0,0.2)';
     setTimeout(() => {
         const computedStyle = getComputedStyle(document.documentElement);
@@ -144,8 +145,6 @@ function checkGameOver() {
     if (lives <= 0) {
         gameActive = false;
         cancelAnimationFrame(animationId);
-        clearInterval(spawnInterval);
-        
         finalScoreEl.innerText = score;
         gameOverModal.classList.remove('hidden');
         document.body.style.cursor = 'default';
@@ -153,13 +152,18 @@ function checkGameOver() {
 }
 
 function initGame() {
-    player = new Player(canvas.width / 2, canvas.height / 2);
+    base = new Base(canvas.width / 2, canvas.height / 2);e
+    player = new Player(canvas.width / 2, canvas.height / 2 + 100);
+    
     projectiles = [];
     enemies = [];
     particles = [];
+    powerUps = [];
+    
     score = 0;
     lives = 3;
     gameActive = true;
+    lastTime = 0; 
 
     scoreEl.innerText = `PUNTOS: ${score}`;
     livesEl.innerText = `VIDAS: ${lives}`;
@@ -168,24 +172,27 @@ function initGame() {
     document.body.style.cursor = 'none';
 
     audio.init();
-    animate();
-    spawnEnemies();
+    animate(0); 
 }
 
 /* ----------------------------------------------------
-    BUCLE PRINCIPAL (LOOP)
+    BUCLE PRINCIPAL 
    ---------------------------------------------------- */
-function animate() {
+function animate(timeStamp) {
     if (!gameActive) return;
     
+    const deltaTime = timeStamp - lastTime;
+    lastTime = timeStamp;
+
     animationId = requestAnimationFrame(animate);
     
-    // Motion blur (estela)
     ctx.fillStyle = 'rgba(10, 5, 20, 0.2)'; 
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     drawGrid();
+    base.draw(ctx);
     drawLaser();
+    handleSpawns(deltaTime);
 
     // Actualización: Jugador
     const speed = 4;
@@ -194,8 +201,25 @@ function animate() {
     if (keys.a && player.x > player.radius) player.x -= speed;
     if (keys.d && player.x < canvas.width - player.radius) player.x += speed;
 
-    player.update(mouse);
+    player.update(mouse, deltaTime);
     player.draw(ctx);
+
+    // Actualización: PowerUps
+    powerUps.forEach((powerUp, index) => {
+        powerUp.update();
+        powerUp.draw(ctx);
+
+        // Colisión Jugador - PowerUp
+        const dist = Math.hypot(player.x - powerUp.x, player.y - powerUp.y);
+        if (dist - player.radius - powerUp.radius < 1) {
+            // Activar Triple Disparo por 5 segundos
+            player.powerUpActive = true;
+            player.powerUpTimer = 5000; 
+            powerUps.splice(index, 1);
+            score += 500; 
+            scoreEl.innerText = `PUNTOS: ${score}`;
+        }
+    });
 
     // Actualización: Partículas
     particles.forEach((particle, index) => {
@@ -212,43 +236,43 @@ function animate() {
         projectile.update();
         projectile.draw(ctx);
 
-        // Limpieza fuera de pantalla
         if (
             projectile.x + projectile.radius < 0 ||
             projectile.x - projectile.radius > canvas.width ||
             projectile.y + projectile.radius < 0 ||
             projectile.y - projectile.radius > canvas.height
         ) {
-            setTimeout(() => {
-                projectiles.splice(index, 1);
-            }, 0);
+            setTimeout(() => { projectiles.splice(index, 1); }, 0);
         }
     });
 
-    // Actualización: Enemigos y Colisiones
+    // Actualización: Enemigos
     enemies.forEach((enemy, index) => {
         enemy.update();
         enemy.draw(ctx);
 
-        // Colisión: Enemigo - Jugador
-        const distPlayer = Math.hypot(player.x - enemy.x, player.y - enemy.y);
-        
-        if (distPlayer - enemy.radius - player.radius < 1) {
-            createExplosion(player.x, player.y, 'white');
+        // 1. Colisión Enemigo - BASE
+        const distBase = Math.hypot(base.x - enemy.x, base.y - enemy.y);
+        if (distBase - base.radius - enemy.radius < 1) {
+            createExplosion(base.x, base.y, 'cyan'); 
             enemies.splice(index, 1);
-            checkGameOver();
+            checkGameOver(); 
         }
 
-        // Colisión: Enemigo - Proyectil
+        // 2. Colisión Enemigo - Jugador 
+        const distPlayer = Math.hypot(player.x - enemy.x, player.y - enemy.y);
+        if (distPlayer - player.radius - enemy.radius < 1) {
+            createExplosion(enemy.x, enemy.y, enemy.color);
+            enemies.splice(index, 1);
+        }
+
+        // 3. Colisión Enemigo - Proyectil
         projectiles.forEach((projectile, pIndex) => {
             const distProjectile = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
-            
             if (distProjectile - enemy.radius - projectile.radius < 1) {
                 createExplosion(projectile.x, projectile.y, enemy.color);
-                
                 score += 100;
                 scoreEl.innerText = `PUNTOS: ${score}`;
-
                 setTimeout(() => {
                     enemies.splice(index, 1);
                     projectiles.splice(pIndex, 1);
@@ -265,6 +289,10 @@ function animate() {
 window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    if(base) {
+        base.x = canvas.width / 2;
+        base.y = canvas.height / 2;
+    }
 });
 
 window.addEventListener('mousemove', (event) => {
@@ -275,17 +303,28 @@ window.addEventListener('mousemove', (event) => {
 window.addEventListener('click', () => {
     if (!gameActive) return;
 
-    const angle = Math.atan2(
-        mouse.y - player.y,
-        mouse.x - player.x
-    );
-    
-    const velocity = {
-        x: Math.cos(angle) * 8, 
-        y: Math.sin(angle) * 8
-    };
+    const angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
+    const velocity = 8;
 
-    projectiles.push(new Projectile(player.x, player.y, velocity));
+    // Lógica de disparo
+    if (player.powerUpActive) {
+        // TRIPLE DISPARO
+        const angles = [angle, angle - 0.2, angle + 0.2]; // Centro, izquierda, derecha (radianes)
+        
+        angles.forEach(a => {
+            projectiles.push(new Projectile(player.x, player.y, {
+                x: Math.cos(a) * velocity,
+                y: Math.sin(a) * velocity
+            }));
+        });
+    } else {
+        // DISPARO NORMAL
+        projectiles.push(new Projectile(player.x, player.y, {
+            x: Math.cos(angle) * velocity,
+            y: Math.sin(angle) * velocity
+        }));
+    }
+    
     audio.playSound('shoot');
 });
 

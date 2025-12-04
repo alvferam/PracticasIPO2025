@@ -48,7 +48,7 @@ canvas {
 
 /* --- INTERFAZ DE USUARIO (UI) --- */
 
-/* Capa superior para textos y menús [ */
+/* Capa superior para textos y menús */
 #ui-layer {
     position: absolute;
     top: 0;
