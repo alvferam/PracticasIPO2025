@@ -152,7 +152,7 @@ function checkGameOver() {
 }
 
 function initGame() {
-    base = new Base(canvas.width / 2, canvas.height / 2);e
+    base = new Base(canvas.width / 2, canvas.height / 2);
     player = new Player(canvas.width / 2, canvas.height / 2 + 100);
     
     projectiles = [];
@@ -192,9 +192,10 @@ function animate(timeStamp) {
     drawGrid();
     base.draw(ctx);
     drawLaser();
+
     handleSpawns(deltaTime);
 
-    // Actualización: Jugador
+    // Actualizar Jugador
     const speed = 4;
     if (keys.w && player.y > player.radius) player.y -= speed;
     if (keys.s && player.y < canvas.height - player.radius) player.y += speed;
@@ -204,15 +205,12 @@ function animate(timeStamp) {
     player.update(mouse, deltaTime);
     player.draw(ctx);
 
-    // Actualización: PowerUps
+    // Actualizar PowerUps
     powerUps.forEach((powerUp, index) => {
         powerUp.update();
         powerUp.draw(ctx);
-
-        // Colisión Jugador - PowerUp
         const dist = Math.hypot(player.x - powerUp.x, player.y - powerUp.y);
         if (dist - player.radius - powerUp.radius < 1) {
-            // Activar Triple Disparo por 5 segundos
             player.powerUpActive = true;
             player.powerUpTimer = 5000; 
             powerUps.splice(index, 1);
@@ -221,7 +219,7 @@ function animate(timeStamp) {
         }
     });
 
-    // Actualización: Partículas
+    // Actualizar Partículas
     particles.forEach((particle, index) => {
         if (particle.alpha <= 0) {
             particles.splice(index, 1);
@@ -231,11 +229,10 @@ function animate(timeStamp) {
         }
     });
 
-    // Actualización: Proyectiles
+    // Actualizar Proyectiles
     projectiles.forEach((projectile, index) => {
         projectile.update();
         projectile.draw(ctx);
-
         if (
             projectile.x + projectile.radius < 0 ||
             projectile.x - projectile.radius > canvas.width ||
@@ -246,27 +243,29 @@ function animate(timeStamp) {
         }
     });
 
-    // Actualización: Enemigos
+    // Actualizar Enemigos
     enemies.forEach((enemy, index) => {
         enemy.update();
         enemy.draw(ctx);
 
-        // 1. Colisión Enemigo - BASE
+        // 1. COLISIÓN ENEMIGO -> BASE 
         const distBase = Math.hypot(base.x - enemy.x, base.y - enemy.y);
         if (distBase - base.radius - enemy.radius < 1) {
             createExplosion(base.x, base.y, 'cyan'); 
-            enemies.splice(index, 1);
+            enemies.splice(index, 1); 
             checkGameOver(); 
         }
 
-        // 2. Colisión Enemigo - Jugador 
+        // 2. COLISIÓN ENEMIGO -> JUGADOR 
         const distPlayer = Math.hypot(player.x - enemy.x, player.y - enemy.y);
+        
         if (distPlayer - player.radius - enemy.radius < 1) {
-            createExplosion(enemy.x, enemy.y, enemy.color);
-            enemies.splice(index, 1);
+            createExplosion(player.x, player.y, 'white'); 
+            enemies.splice(index, 1); 
+            checkGameOver(); 
         }
 
-        // 3. Colisión Enemigo - Proyectil
+        // 3. COLISIÓN ENEMIGO -> PROYECTIL
         projectiles.forEach((projectile, pIndex) => {
             const distProjectile = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
             if (distProjectile - enemy.radius - projectile.radius < 1) {
